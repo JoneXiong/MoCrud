@@ -148,7 +148,6 @@ def get_flashed_messages(with_categories=False):
     but when `with_categories` is set to `True`, the return value will
     be a list of tuples in the form ``(category, message)`` instead.
     """
-    print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
     from mole.sessions import get_current_session
     session = get_current_session()
     if session.has_key('_flashes'):

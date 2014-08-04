@@ -43,6 +43,8 @@ class Auth(object):
 
         self.clear_session = clear_session
         self.default_next_url = default_next_url
+        
+        self.check = True
 
         self.setup()
 
@@ -51,6 +53,7 @@ class Auth(object):
 
     def get_user_model(self):
         class User(self.db.Model, BaseUser):
+            id = PrimaryKeyField()
             username = CharField(unique=True)
             password = CharField()
             email = CharField(unique=True)
@@ -184,10 +187,11 @@ class Auth(object):
                 )
                 if authenticated_user:
                     self.login_user(authenticated_user)
-                    return redirect(
-                        request.params.get('next') or \
-                        self.default_next_url
-                    )
+                    return 'OK'
+#                    return redirect(
+#                        request.params.get('next') or \
+#                        self.default_next_url
+#                    )
                 else:
                     flash('Incorrect username or password')
         else:
@@ -226,6 +230,6 @@ class Auth(object):
 #        self.register_blueprint()
 #        self.register_handlers()
 #        self.register_context_processors()
-from mocrud import conf
+from mocrud import m_app
 from mocrud.db import db
-auth = Auth(conf.app, db)
+auth = Auth(m_app, db)

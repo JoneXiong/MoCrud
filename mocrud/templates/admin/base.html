@@ -36,9 +36,11 @@
         <a class="brand" href="{{ url_for('admin.index') }}">Site Admin <small>{{ branding }}</small></a>
         <ul class="nav">
           <li class="active"><a href="{{ url_for('admin.index') }}">面板</a></li>
-		  {% for label, app_verb in apps %}
+		  {% if apps %}
+		  	{% for label, app_verb in apps %}
           <li{% if model_grup == label %} class="active"{% endif %}><a href="/admin/{{label}}">{{app_verb}}</a></li>
-		  {% endfor %}
+		  	{% endfor %}
+		  {% endif %}
         </ul>
 
         <form action="{{ url_for('auth.logout') }}" class="navbar-form pull-right" method="get">
@@ -50,10 +52,11 @@
 
   <div class="container-fluid">
     <div class="row-fluid">
+    	
       <div class="span2">
         <div class="well sidebar-nav">
           {% block sidebar %}
-
+		{% if get_app_nemus %}
 			{% for grup_verb, icon_class ,menus in get_app_nemus(model_grup) %}
 			<h3>{{ grup_verb }}</h3>
 			<ul id="nav" class="nav nav-list">
@@ -62,6 +65,14 @@
 					{% endfor %}
 			</ul>
 			{% endfor %}
+		{% else %}
+			<h3>导航</h3>
+			<ul id="nav" class="nav nav-list">
+					{% for iter_admin in model_admin.admin.get_model_admins() %}
+						<li{% if model_name== iter_admin.get_admin_name() %} class="active"{% endif %}><a href="{{ url_for(iter_admin.get_url_name('index')) }}">{{ iter_admin.get_display_name()|fix_underscores }}</a></li>
+					{% endfor %}
+			</ul>
+		{% endif %}
 
           {% endblock %}
         </div>

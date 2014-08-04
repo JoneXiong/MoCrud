@@ -175,6 +175,9 @@ class ModelAdmin(object):
 
     def get_columns(self):
         return self.model._meta.get_field_names()
+    
+    def get_primary_key(self):
+        return self.model._meta.primary_key.name
 
     def column_is_sortable(self, col):
         return col in self.model._meta.fields
@@ -474,10 +477,13 @@ class AdminTemplateHelper(object):
 
     def get_model_admins(self):
         from mocrud import conf
-        from mosys.sys_view import get_app_nemus
+        if conf:
+            from mosys.sys_view import get_app_nemus
+        else:
+            get_app_nemus = None
         return {'branding': self.admin.branding, 
-                'apps':conf.apps_list,
-                'apps_dict':dict(conf.apps_list),
+                'apps': conf and conf.apps_list or None,
+                'apps_dict': conf and dict(conf.apps_list),
                 'get_app_nemus':get_app_nemus
                 }
 
@@ -542,16 +548,19 @@ class Admin(object):
     def auth_required(self, func):
         @functools.wraps(func)
         def inner(*args, **kwargs):
-            user = self.auth.get_logged_in_user()
-
-            if not user:
-                login_url = url_for('auth.login', next=get_next())
-                return redirect(login_url)
-
-            if not self.check_user_permission(user):
-                abort(403)
-
-            return func(*args, **kwargs)
+            if  self.auth.check:
+                user = self.auth.get_logged_in_user()
+    
+                if not user:
+                    login_url = url_for('auth.login', next=get_next())
+                    return redirect(login_url)
+    
+                if not self.check_user_permission(user):
+                    abort(403)
+    
+                return func(*args, **kwargs)
+            else:
+                return func(*args, **kwargs)
         return inner
 
     def check_user_permission(self, user):
@@ -648,9 +657,10 @@ class Admin(object):
         self.configure_routes()
 #        self.register_blueprint()
 
-from mocrud import conf
+from mocrud import m_app
 from mocrud.auth import auth
-admin = Admin(conf.app, auth)
+
+admin = Admin(m_app, auth)
 
 class Export(object):
     def __init__(self, query, related, fields):

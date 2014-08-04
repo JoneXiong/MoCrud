@@ -21,8 +21,8 @@
     <thead>
       <tr>
         <th class="check first shrink"><input type="checkbox" name="xxx" onchange="javascript:$('td input[type=checkbox]').attr('checked', this.checked);" /></th>
-        {% if model_admin.columns %}
-          {% for column in model_admin.columns %}
+        {% if model_admin.columns or model_admin.show_all_columns %}
+          {% for column in model_admin.columns or model_admin.get_columns() %}
             {% if ordering == column %}
               {% set sort_by = '-'+column %}
             {% else %}
@@ -33,17 +33,23 @@
         {% else %}
           <th>{{ model_admin.get_display_name() }}</th>
         {% endif %}
+		{% if model_admin.get_primary_key() %}
         <th class="last shrink"></th>
+		{% endif %}
       </tr>
     </thead>
     <tbody>
     {% for object in query.get_list() %}
       <tr>
         <td class="check"><input type="checkbox" name="id" value="{{ object.get_id() }}" /></td>
-        {% if model_admin.columns %}
-          {% for column in model_admin.columns %}
+        {% if model_admin.columns or model_admin.show_all_columns %}
+          {% for column in model_admin.columns or model_admin.get_columns()  %}
             {% if loop.index == 1 %}
+			  {% if model_admin.get_primary_key() %}
               <td><a href="{{ url_for(model_admin.get_url_name('edit'), pk=object.get_id()) }}">{{ get_model_field(object, column) }}</a></td>
+			  {% else %}
+			  <td>{{ get_model_field(object, column) }}</td>
+			  {% endif %}
             {% else %}
               <td>{{ get_model_field(object, column) }}</td>
             {% endif %}
@@ -51,12 +57,14 @@
         {% else %}
           <td><a href="{{ url_for(model_admin.get_url_name('edit'), pk=object.get_id()) }}">{{ object }}</a></td>
         {% endif %}
+		{% if model_admin.get_primary_key() %}
         <td class="last links">
           <ul class="inline">
             <li><a href="{{ url_for(model_admin.get_url_name('edit'), pk=object.get_id()) }}">编辑</a></li>
             <li><a href="{{ url_for(model_admin.get_url_name('delete'), id=object.get_id()) }}">删除</a></li>
           </ul>
         </td>
+		{% endif %}
       </tr>
     {% endfor %}
     </tbody>
