@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 
 menus = (
          ('aboutEmp',u'菜单组一', 'grup_chat'),
@@ -6,8 +6,14 @@ menus = (
          ('reportEmp',u'菜单组二', 'grup_disc')
          )
 
+####### Crud 初始化 #######
+from mocrud.api import setup,uncheck
+import models
+setup(models)
+uncheck()
+
 ####### 自定义视图 #########
 import routes
 
 from mole.const import TEMPLATE_PATH
-TEMPLATE_PATH.append('./apps/crud_example/templates/')
+TEMPLATE_PATH.append('./crud_example/templates/')

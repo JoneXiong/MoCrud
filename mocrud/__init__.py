@@ -7,7 +7,7 @@ __version__ = "0.1"
 
 from mole.const import TEMPLATE_PATH
 from mole.mole import default_app
-TEMPLATE_PATH.append('./lib/mocrud/templates/')
+TEMPLATE_PATH.append('./mocrud/templates/')
 
 try:
     import mosys
@@ -24,7 +24,7 @@ if conf:
 from mole import static_file
 @m_app.route('/static_crud/:filename#.*#',name='admin.static')
 def admin_static(filename):
-    return static_file(filename, root='./lib/mocrud/static')
+    return static_file(filename, root='./mocrud/static')
 
 #from db import Database
 #from apps import crud_db_config

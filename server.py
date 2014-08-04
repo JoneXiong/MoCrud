@@ -6,7 +6,7 @@ def set_lib_path():
     sys.path.append('./libs')
 set_lib_path()
 
-import apps.crud_example
+import crud_example
 import mocrud
 
 from mole.mole import default_app
