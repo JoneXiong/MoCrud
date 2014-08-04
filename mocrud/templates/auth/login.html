@@ -1,26 +1,136 @@
-{% extends "base.html" %}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML xmlns="http://www.w3.org/1999/xhtml">
+    
+    <HEAD>
+        <TITLE>
+            Data Manage Center 
+        </TITLE>
+        <META content="text/html; charset=utf-8" http-equiv=Content-Type>
+        <STYLE type=text/css>
+            * { FONT-SIZE: 9pt; OVERFLOW: hidden } BODY { MARGIN: 0px }
+        </STYLE>
+        <META name=GENERATOR content="MSHTML 8.00.6001.23520">
+		<script src="/media/js/jquery.js" type="text/javascript"></script>
+    </HEAD>
+    
+    <BODY>
+        <FORM id = "manager_login" onkeydown="javasceipt:if(event.keyCode == 13){$('#login_id').click();}" method=post name=NETSJ_Login action="">
+            <TABLE border=0 cellSpacing=0 cellPadding=0 width=940 bgColor=#ffffff
+            align=center>
+                <TBODY>
+                    <TR>
+                        <TD style="BACKGROUND: url(/static_crud/img/login/login01.jpg)" height=238>
+                            &nbsp;
+                        </TD>
+                    </TR>
+                    <TR>
+                        <TD height=190>
+                            <TABLE border=0 cellSpacing=0 cellPadding=0 width="100%">
+                                <TBODY>
+                                    <TR>
+                                        <TD style="BACKGROUND: url(/static_crud/img/login/login02.jpg)" height=190
+                                        width=208>
+                                            &nbsp;
+                                        </TD>
+                                        <TD style="BACKGROUND: url(/static_crud/img/login/login03.jpg)" width=518>
+                                            <TABLE border=0 cellSpacing=0 cellPadding=0 width=320 align=center>
+                                                <TBODY>
+                                                    <TR>
+                                                        <TD height=35 width=40>
+                                                            <IMG src="/static_crud/img/login/user.gif" width=30 height=30>
+                                                        </TD>
+                                                        <TD height=35 width=38>
+                                                            用户
+                                                        </TD>
+                                                        <TD height=35 width=242>
+                                                            <INPUT id=username size=30 value="administrator" name=username>
+                                                        </TD>
+                                                    </TR>
+                                                    <TR>
+                                                        <TD height=35>
+                                                            <IMG src="/static_crud/img/login/password.gif" width=28 height=32>
+                                                        </TD>
+                                                        <TD height=35>
+                                                            密码
+                                                        </TD>
+                                                        <TD height=35>
+                                                            <INPUT id="password" size=30 type=password name=password>
+                                                        </TD>
+                                                    </TR>
+                                                    <TR>
+                                                        <TD height=40>
+                                                            &nbsp;
+                                                        </TD>
+                                                        <TD height=40>
+                                                            &nbsp;
+                                                        </TD>
+                                                        <TD height=50>
+                                                            <image src="/static_crud/img/login/login.gif" id = "login_id"  onclick = "chk();">
+                                                        </TD>
+                                                    </TR>
+                                                </TBODY>
+                                            </TABLE>
+                                        </TD>
+                                        <TD style="BACKGROUND: url(/static_crud/img/login/login04.jpg)" width=214>
+                                            &nbsp;
+                                        </TD>
+                                    </TR>
+                                </TBODY>
+                            </TABLE>
+                        </TD>
+                    </TR>
+                    <TR>
+                        <TD style="BACKGROUND: url(/static_crud/img/login/login05.jpg)" height=133>
+                            &nbsp;
+                        </TD>
+                    </TR>
+                </TBODY>
+            </TABLE>
+        </FORM>
+		<script language="JavaScript">
+			function getQueryString(name){
+				var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+				var r = window.location.search.substr(1).match(reg);
+				if (r != null) 
+					return unescape(r[2]);
+				return null;
+			}
+			
+			
+            function chk(a){
+			
+				var uname = $.trim($("#username").val());
+				var pwd = $.trim($("#password").val());
+				
+				if (uname == "" || pwd == "") {
+					alert("用户名或密码不能为空!");
+					return;
+				}
+				
+				serialize_form = $("#manager_login").serialize();
+				$.ajax({
+					url: "",
+					type: "POST",
+					data: serialize_form,
+					dataType: "html",
+					success: function(msg){
+						if (msg == 'OK') {
+							var m_next = getQueryString('next');
+							if (m_next) {
+								window.location.href = m_next;
+							}
+							else {
+								window.location.href = "/admin/";
+							}
+						}
+						else {
+							$("#password").val('').focus();
+							alert("用户名或密码不正确!");
+						}
+					}
+				});
+			}
+		</script>
+    </BODY>
 
-{% from 'macros/forms.html' import with_errors %}
-
-{% block content_title %}Log in{% endblock %}
-
-{% block content %}
-  <form method="post" action="">
-    <input type="hidden" name="next" value="{{ next }}" />
-    {% for field in form %}
-      <div class="clearfix{% if field.errors %} error{% endif %}">
-        {{ field.label }}
-        <div class="input">
-          {% set css_class = 'span6 ' %}
-          {% if field.errors %}
-            {% set css_class = 'error ' + css_class %}
-          {% endif %}
-          {{ field(class=css_class) }}
-          {% if field.description %}<span class="help-inline">{{ field.description|safe() }}</span>{% endif %}
-          {% for error in field.errors %}<span class="help-inline">{{ error }}</span>{% endfor %}
-        </div>
-      </div>
-    {% endfor %}
-    <div class="actions"><button class="btn primary" type="submit">Log in</button></div>
-  </form>
-{% endblock %}
+</HTML>
