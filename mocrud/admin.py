@@ -202,8 +202,12 @@ class ModelAdmin(object):
         return query
 
     def get_extra_context(self):
-        m_dic = self.admin.template_helper.get_model_admins()
+        u'''
+        Model模型级公共Context
+        '''
+        m_dic = self.admin.template_helper.get_helper_context()
         m_dic['model_grup'] = self.model_grup
+        m_dic['model_admins'] = self.admin.get_grup_admins(self.model_grup)
         m_dic['model_name'] = self.get_admin_name()
         return m_dic
 
@@ -445,7 +449,7 @@ class AdminPanel(object):
 
 class AdminTemplateHelper(object):
     def __init__(self, admin):
-        self.admin = admin
+        self.admin = admin  # 指针回路
         self.app = self.admin.app
 
     def get_model_field(self, model, field):
@@ -486,6 +490,12 @@ class AdminTemplateHelper(object):
                 'apps_dict': conf and dict(conf.apps_list),
                 'get_app_nemus':get_app_nemus
                 }
+    
+    def get_helper_context(self):
+        u'''
+        Apps站点级公共Context
+        '''
+        return self.get_model_admins()
 
     def get_admin_url(self, obj):
         model_admin = self.admin.get_admin_for(type(obj))
@@ -606,10 +616,13 @@ class Admin(object):
         return sorted(self._panels.values(), key=lambda o: o.slug)
 
     def index(self):
+        u'''
+        总控制面板试图
+        '''
         return render_template('admin/index.html',
             model_admins=self.get_model_admins(),
             panels=self.get_panels(),
-            **self.template_helper.get_model_admins()
+            **self.template_helper.get_helper_context()
         )
 
     def get_blueprint(self, blueprint_name):
@@ -659,7 +672,7 @@ class Admin(object):
 
 from mocrud import m_app
 from mocrud.auth import auth
-
+# 全局实例
 admin = Admin(m_app, auth)
 
 class Export(object):
