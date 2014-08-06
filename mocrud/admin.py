@@ -558,7 +558,7 @@ class AdminTemplateHelper(object):
 
 class Admin(object):
     def __init__(self, app, auth, template_helper=AdminTemplateHelper,
-                 prefix='/admin', name='admin', branding='MoleSys-Crud'):
+                 prefix='/admin', name='admin', branding=''):
         self.app = app
         self.auth = auth
 
