@@ -77,8 +77,9 @@ var Admin = window.Admin || {};
   }
 
   ModelAdminRawIDField.prototype.init = function(repr) {
+  	repr = (repr=='None' ? '' : repr) ;
     var self = this
-      , repr = repr || 'Select...'
+      , repr = repr || '选择...'
       , hidden_elem = $(this.selector)
       , new_elem = $('<a class="btn btn-primary" href="#">'+repr+'</a>');
 

@@ -70,6 +70,8 @@ class ModelAdmin(object):
     # columns to display in the list index - can be field names or callables on
     # a model instance, though in the latter case they will not be sortable
     columns = None
+    show_all_columns = True
+    add_column_display = {}
 
     # exclude certian fields from being exposed as filters -- for related fields
     # use "__" notation, e.g. user__password
@@ -95,6 +97,8 @@ class ModelAdmin(object):
     menu_grup = '_default_grup'
     visible = True
     icon_class = 'menu_interact'
+    
+    verbose_name = None
 
     # templates, to override see get_template_overrides()
     base_templates = {
@@ -176,6 +180,17 @@ class ModelAdmin(object):
     def get_columns(self):
         return self.model._meta.get_field_names()
     
+    def get_column_display(self, column_name):
+        try:
+            field = self.model._meta.fields[column_name]
+        except KeyError:
+            if self.add_column_display.has_key(column_name):
+                return self.add_column_display[column_name]
+            else:
+                return self.admin.template_helper.fix_underscores(column_name)
+        else:
+            return field.verbose_name
+    
     def get_primary_key(self):
         return self.model._meta.primary_key.name
 
@@ -183,7 +198,10 @@ class ModelAdmin(object):
         return col in self.model._meta.fields
 
     def get_display_name(self):
-        return self.model.__name__
+        if self.verbose_name:
+            return self.verbose_name
+        else:
+            return self.model.__name__
 
     def get_admin_name(self):
         return slugify(self.model.__name__)
@@ -454,6 +472,8 @@ class AdminTemplateHelper(object):
 
     def get_model_field(self, model, field):
         attr = getattr(model, field)
+        if type(attr)==bool:attr=attr and u'是' or u'否'
+        if attr==None:attr=''
         if callable(attr):
             return attr()
         return attr

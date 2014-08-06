@@ -4,12 +4,13 @@
 
 {% block sidebar %}
 <h3>我的常用操作</h3>
-<ul id="nav" class="nav nav-list">
-	<li><a href="#">新增人员</a></li>
-	<li><a href="#">新增部门</a></li>
-	<li><a href="#">新增职位</a></li>
-	<li><a href="#">新增区域</a></li>
-</ul>
+			<ul id="nav" class="nav nav-list">
+					{% for iter_admin in model_admins %}
+						{% if iter_admin.visible %}
+						<li{% if model_name== iter_admin.get_admin_name() %} class="active"{% endif %}><a href="{{ url_for(iter_admin.get_url_name('index')) }}">{{ iter_admin.get_display_name()|fix_underscores }}</a></li>
+						{% endif %}
+					{% endfor %}
+			</ul>
 {% endblock %}
 
 {% block content %}
@@ -31,6 +32,7 @@
     </thead>
     <tbody>
       {% for iter_admin in model_admins %}
+	  	{% if iter_admin.visible %}
         <tr class="link">
           <td><span class="show"><a href="{{ url_for(iter_admin.get_url_name('index')) }}">{{ iter_admin.get_display_name()|fix_underscores }}</a></span></td>
           <td><span>{{ iter_admin.get_query().count() }}</span></td>
@@ -41,6 +43,7 @@
             </ul>
           </td>
         </tr>
+		{% endif %}
       {% endfor %}
     </tbody>
   </table>

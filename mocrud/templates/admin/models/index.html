@@ -28,7 +28,7 @@
             {% else %}
               {% set sort_by = column %}
             {% endif %}
-            <th>{% if model_admin.column_is_sortable(column) %}<a href="./?{{ update_querystring(request.query_string, 'ordering', sort_by)|safe() }}">{% endif %}{{ get_verbose_name(model_admin.model, column) }}{% if model_admin.column_is_sortable(column) %}</a>{% endif %}</th>
+            <th>{% if model_admin.column_is_sortable(column) %}<a href="./?{{ update_querystring(request.query_string, 'ordering', sort_by)|safe() }}">{% endif %}{{ model_admin.get_column_display(column) }}{% if model_admin.column_is_sortable(column) %}</a>{% endif %}</th>
           {% endfor %}
         {% else %}
           <th>{{ model_admin.get_display_name() }}</th>
