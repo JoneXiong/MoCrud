@@ -5,7 +5,7 @@
         data-field="{{ field.name|apply_prefix(prefix, 'fv_') }}"
         data-select="{{ field.name|apply_prefix(prefix, 'fo_') }}"
         id="filter-{{ field.name|apply_prefix(prefix, 'fo_') }}"
-        href="#">{% if prefix %}{{ ' / '.join(prefix) }} / {% endif %}{{ field.name }}</a>
+        href="#">{% if prefix %}{% if node.model.Admin.verbose_name %}{{ node.model.Admin.verbose_name }} /{% else %}{{ ' / '.join(prefix) }} / {% endif %}{% endif %}{% if field.verbose_name %}{{ field.verbose_name }}{% else %}{{field.name}}{% endif %}</a>
     </li>
   {% endfor %}
   {% for child_prefix, child in node.children.items() %}
