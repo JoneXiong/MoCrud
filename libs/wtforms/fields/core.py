@@ -494,7 +494,12 @@ class StringField(Field):
             self.data = ''
 
     def _value(self):
-        return text_type(self.data) if self.data is not None else ''
+        #print self.data,type(self.data),repr(self.data)
+        try:
+            m_data = self.data.decode('UTF-8')
+        except:
+            m_data = self.data
+        return text_type(m_data) if m_data is not None else ''
 
 
 class IntegerField(Field):
