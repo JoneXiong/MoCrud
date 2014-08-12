@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 ##################### 系统环境设置 #######################
 def set_lib_path():
     import sys
@@ -6,8 +6,10 @@ def set_lib_path():
     sys.path.append('./libs')
 set_lib_path()
 
-import crud_example
 import mocrud
+import crud_example
+#import bookM
+
 
 from mole.mole import default_app
 #加入SessionMiddleware 中间件
