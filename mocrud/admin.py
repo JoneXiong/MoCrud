@@ -81,6 +81,8 @@ class ModelAdmin(object):
     # form parameters, lists of fields
     exclude = None
     fields = None
+    
+    method_exclude = [] #'add', 'delete', 'edit', 'export'
 
     form_converter = AdminModelConverter
 
@@ -168,14 +170,25 @@ class ModelAdmin(object):
         return self.get_query().where(self.pk==pk).get()
 
     def get_urls(self):
-        return (
-            ('/', self.index),
-            ('/add/', self.add),
-            ('/delete/', self.delete),
-            ('/export/', self.export),
-            ('/:pk/', self.edit),
-            ('/_ajax/', self.ajax_list),
-        )
+        if not self.method_exclude:
+            return (
+                ('/', self.index),
+                ('/add/', self.add),
+                ('/delete/', self.delete),
+                ('/export/', self.export),
+                ('/:pk/', self.edit),
+                ('/_ajax/', self.ajax_list),
+            )
+        else:
+            m_list = [
+                    ('/', self.index),
+                    ('/_ajax/', self.ajax_list),
+                ]
+            if 'add' not in self.method_exclude:m_list.append( ('/add/', self.add) )
+            if 'delete' not in self.method_exclude:m_list.append( ('/delete/', self.delete) )
+            if 'export' not in self.method_exclude:m_list.append( ('/export/', self.export) )
+            if 'edit'  not in self.method_exclude:m_list.append( ('/:pk/', self.edit) )
+            return m_list
 
     def get_columns(self):
         return self.model._meta.get_field_names()

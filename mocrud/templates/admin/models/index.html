@@ -6,8 +6,12 @@
     <li class="dropdown" style="float:right">
       <a class="dropdown-toggle" data-toggle="dropdown" href="#">操作... <span class="caret" /></a>
       <ul class="dropdown-menu pull-right">
+      	{% if 'export' not in model_admin.method_exclude %}
         <li><a href="#" onclick="Admin.index_submit('export');">导出</a></li>
+		{% endif %}
+		{% if 'delete' not in model_admin.method_exclude %}
         <li><a href="#" onclick="Admin.index_submit('delete');">删除</a></li>
+		{% endif %}
       </ul>
     </li>
     {% include "admin/includes/filter_dropdown.html" %}
@@ -46,7 +50,7 @@
           {% for column in model_admin.columns or model_admin.get_columns()  %}
             {% if loop.index == 1 %}
 			  {% if model_admin.get_primary_key() %}
-              <td><a href="{{ url_for(model_admin.get_url_name('edit'), pk=object.get_id()) }}">{{ get_model_field(object, column) }}</a></td>
+              <td><a href="{% if 'edit' not in model_admin.method_exclude %}{{ url_for(model_admin.get_url_name('edit'), pk=object.get_id()) }}{% else %}#{% endif %}">{{ get_model_field(object, column) }}</a></td>
 			  {% else %}
 			  <td>{{ get_model_field(object, column) }}</td>
 			  {% endif %}
@@ -55,13 +59,17 @@
             {% endif %}
           {% endfor %}
         {% else %}
-          <td><a href="{{ url_for(model_admin.get_url_name('edit'), pk=object.get_id()) }}">{{ object }}</a></td>
+          <td><a href="{% if 'edit' not in model_admin.method_exclude %}{{ url_for(model_admin.get_url_name('edit'), pk=object.get_id()) }}{% else %}#{% endif %}">{{ object }}</a></td>
         {% endif %}
 		{% if model_admin.get_primary_key() %}
         <td class="last links">
           <ul class="inline">
+          	{% if 'edit' not in model_admin.method_exclude %}
             <li><a href="{{ url_for(model_admin.get_url_name('edit'), pk=object.get_id()) }}">编辑</a></li>
+			{% endif %}
+			{% if 'delete' not in model_admin.method_exclude %}
             <li><a href="{{ url_for(model_admin.get_url_name('delete'), id=object.get_id()) }}">删除</a></li>
+			{% endif %}
           </ul>
         </td>
 		{% endif %}

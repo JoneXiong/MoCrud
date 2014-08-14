@@ -38,8 +38,12 @@
           <td><span>{{ iter_admin.get_query().count() }}</span></td>
           <td class="links">
             <ul class="inline">
+              {% if 'add' not in iter_admin.method_exclude %}
               <li><a href="{{ url_for(iter_admin.get_url_name('add')) }}">新增</a></li>
+			  {% endif %}
+		      {% if 'export' not in iter_admin.method_exclude %}
               <li><a href="{{ url_for(iter_admin.get_url_name('export')) }}">导出</a></li>
+			  {% endif %}
             </ul>
           </td>
         </tr>
