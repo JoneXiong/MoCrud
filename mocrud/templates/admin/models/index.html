@@ -26,7 +26,7 @@
       <tr>
         <th class="check first shrink"><input type="checkbox" name="xxx" onchange="javascript:$('td input[type=checkbox]').attr('checked', this.checked);" /></th>
         {% if model_admin.columns or model_admin.show_all_columns %}
-          {% for column in model_admin.columns or model_admin.get_columns() %}
+          {% for column in model_admin.columns or model_admin.get_columns() if column %}
             {% if ordering == column %}
               {% set sort_by = '-'+column %}
             {% else %}
@@ -47,7 +47,7 @@
       <tr>
         <td class="check"><input type="checkbox" name="id" value="{{ object.get_id() }}" /></td>
         {% if model_admin.columns or model_admin.show_all_columns %}
-          {% for column in model_admin.columns or model_admin.get_columns()  %}
+          {% for column in model_admin.columns or model_admin.get_columns() if column %}
             {% if loop.index == 1 %}
 			  {% if model_admin.get_primary_key() %}
               <td><a href="{% if 'edit' not in model_admin.method_exclude %}{{ url_for(model_admin.get_url_name('edit'), pk=object.get_id()) }}{% else %}#{% endif %}">{{ get_model_field(object, column) }}</a></td>
