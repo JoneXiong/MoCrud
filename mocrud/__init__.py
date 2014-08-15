@@ -2,12 +2,16 @@
 '''
 crud
 '''
-
 __version__ = "0.1"
+
+import os
 
 from mole.const import TEMPLATE_PATH
 from mole.mole import default_app
-TEMPLATE_PATH.append('./mocrud/templates/')
+
+cur = os.path.split(os.path.realpath(__file__))[0]
+templates_path = os.path.join(cur,'templates')
+TEMPLATE_PATH.append(templates_path)
 
 try:
     import mosys
