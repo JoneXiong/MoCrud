@@ -26,9 +26,10 @@ if conf:
             m_app = conf.app
 
 from mole import static_file
+static_path = os.path.join(cur,'static')
 @m_app.route('/static_crud/:filename#.*#',name='admin.static')
 def admin_static(filename):
-    return static_file(filename, root='./mocrud/static')
+    return static_file(filename, root=static_path)
 
 #from db import Database
 #from apps import crud_db_config
