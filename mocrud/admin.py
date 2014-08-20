@@ -83,6 +83,10 @@ class ModelAdmin(object):
     fields = None
     
     method_exclude = [] #'add', 'delete', 'edit', 'export'
+    
+    ops = []
+    
+    show_nav = True
 
     form_converter = AdminModelConverter
 
@@ -120,6 +124,11 @@ class ModelAdmin(object):
 
         self.templates = dict(self.base_templates)
         self.templates.update(self.get_template_overrides())
+        
+        self.model_op = []
+        self.object_op = []
+        for op_class in self.ops:
+            self.register_op(op_class)
 
     def get_template_overrides(self):
         '''
@@ -168,17 +177,35 @@ class ModelAdmin(object):
 
     def get_object(self, pk):
         return self.get_query().where(self.pk==pk).get()
+    
+    def register_op(self, op_class):
+        inherit_flag = None
+        if hasattr(op_class,'__bases__'):
+            if len(op_class.__bases__)>0:
+                m_base = op_class.__bases__[0]
+                if m_base.__name__ in ('ModelOp','ObjectOp'):
+                    inherit_flag = m_base.__name__
+                else:
+                    if len(m_base.__bases__)>0:
+                        if m_base.__bases__[0].__name__ in ('ModelOp','ObjectOp'):
+                            inherit_flag = m_base.__bases__[0].__name__
+        if inherit_flag:
+            op_object = op_class(self)
+            if inherit_flag == 'ModelOp':
+                self.model_op.append(op_object)
+            if inherit_flag == 'ObjectOp':
+                self.object_op.append(op_object)
 
     def get_urls(self):
         if not self.method_exclude:
-            return (
+            m_list =  [
                 ('/', self.index),
                 ('/add/', self.add),
                 ('/delete/', self.delete),
                 ('/export/', self.export),
                 ('/:pk/', self.edit),
                 ('/_ajax/', self.ajax_list),
-            )
+            ]
         else:
             m_list = [
                     ('/', self.index),
@@ -188,7 +215,12 @@ class ModelAdmin(object):
             if 'delete' not in self.method_exclude:m_list.append( ('/delete/', self.delete) )
             if 'export' not in self.method_exclude:m_list.append( ('/export/', self.export) )
             if 'edit'  not in self.method_exclude:m_list.append( ('/:pk/', self.edit) )
-            return m_list
+        
+        ops = self.model_op + self.object_op
+        for op in ops:
+            m_name = op.__class__.__name__
+            m_list.append( ('/%s/'%m_name, op.hander) )
+        return m_list
 
     def get_columns(self):
         return self.model._meta.get_field_names()
@@ -256,10 +288,11 @@ class ModelAdmin(object):
 
         if request.method == 'POST':
             id_list = ','.join(request.forms.getall('id'))
-            if request.forms['action'] == 'delete':
-                return redirect(url_for(self.get_url_name('delete'), id=id_list))
-            else:
-                return redirect(url_for(self.get_url_name('export'), id=id_list))
+            return redirect(url_for(self.get_url_name(request.forms['action']), id=id_list))
+#            if request.forms['action'] == 'delete':
+#                return redirect(url_for(self.get_url_name('delete'), id=id_list))
+#            else:
+#                return redirect(url_for(self.get_url_name('export'), id=id_list))
 
         return render_template(self.templates['index'],
             model_admin=self,
@@ -686,7 +719,7 @@ class Admin(object):
                 full_url = '%s/%s%s' % (self.url_prefix,admin_name, url)
                 self.blueprint.route(
                     full_url,
-                    name= model_admin.get_url_name(callback.__name__),#'admin.%s_%s' % (admin_name, callback.__name__),
+                    name= model_admin.get_url_name(callback.__name__!='hander' and callback.__name__ or callback.im_class.__name__),#'admin.%s_%s' % (admin_name, callback.__name__),
                     method=['GET', 'POST'],
                 )(self.auth_required(callback))
 

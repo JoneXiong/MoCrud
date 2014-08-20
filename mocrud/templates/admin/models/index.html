@@ -2,6 +2,7 @@
 
 {% block tab_index_class %}active{% endblock %}
 
+<!-- extra_tabs start -->
 {% block extra_tabs %}
     <li class="dropdown" style="float:right">
       <a class="dropdown-toggle" data-toggle="dropdown" href="#">操作... <span class="caret" /></a>
@@ -12,14 +13,22 @@
 		{% if 'delete' not in model_admin.method_exclude %}
         <li><a href="#" onclick="Admin.index_submit('delete');">删除</a></li>
 		{% endif %}
+		{% for op in model_admin.object_op %}
+			{% set key=op.__class__.__name__ %}
+		 <li><a href="#" onclick="Admin.index_submit('{{ key }}');">{{ op.verbose_name }}</a></li>
+		{% endfor %}
       </ul>
     </li>
     {% include "admin/includes/filter_dropdown.html" %}
 {% endblock %}
+<!-- extra_tabs end -->
+
 
 {% block content %}
-  {% include "admin/includes/filter_widgets.html" %}
 
+  {% include "admin/includes/filter_widgets.html" %}
+  
+  <!-- table & form start -->
   <form action="." class="form-horizontal" id="model-list" method="post"><input type="hidden" name="action" value="" />
   <table class="table table-bordered table-striped">
     <thead>
@@ -78,5 +87,8 @@
     </tbody>
   </table>
   </form>
+  <!-- table & form end -->
+  
   {% include "admin/includes/pagination.html" %}
+  
 {% endblock %}

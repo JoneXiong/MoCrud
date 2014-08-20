@@ -1,0 +1,42 @@
+{% extends "admin/models/base_forms.html" %}
+
+{% block breadcrumbs %}
+ {{ super() }}
+ <li><span class="divider">/</span> <a href=".">{{ cur_op.verbose_name }}</a></li>
+{% endblock %}
+
+{% block extra_tabs %}
+   <li class="active"><a href=".">{{ cur_op.verbose_name }}</a></li>
+{% endblock %}
+
+{% block content %}
+  {% include "admin/includes/form_raw_id.html" %}
+  {% if form.errors %}
+    <div class="alert alert-block alert-error">
+      <a class="close" data-dismiss="alert" href="#">×</a>
+      <p>There were errors with your form submission</p>
+    </div>
+  {% endif %}
+  <form action="." class="form-horizontal" method="post">
+    {% for object in instances %}<input type="hidden" name="id" value="{{ object.get_id() }}" />{% endfor %}
+    <fieldset>
+      <legend>确定 {{ cur_op.verbose_name }}</legend>
+      <ul>
+        {% for object in instances %}
+          <li>
+              <span>{{ object }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+	  
+      {% for field in form %}
+        {{ admin_field(field) }}
+      {% endfor %}
+      {% block extra_form %}{% endblock %}
+      <div class="form-actions">
+        <button class="btn btn-danger" type="submit">确定</button>
+        <a class="btn" href="{{ url_for(model_admin.get_url_name('index')) }}">取消</a>
+      </div>
+    </fieldset>
+  </form>
+{% endblock %}
