@@ -1,0 +1,41 @@
+admin/base.htm ——> admin/model/base.html ——>
+																		  ——> admin/models/base_filters.html ——> admin/models/index.html
+																		  															 ——> admin/models/export.html
+																																	 
+																		  ——> admin/models/base_forms.html ——> admin/models/add.html
+																		  															 ——> admin/models/edit.html
+																																	 ——> admin/models/model_op.html
+																																	 ——> admin/models/object_op.html
+																		  ——> admin/models/delete.html
+																		  
+																		  
+
+{% block title %}	{% endblock %}
+
+{% block extra_script %}	{% endblock %}
+
+
+{% block body_class %}		{% endblock %}
+
+
+
+{% block top_nav %}		
+	{% block branding %}			{% endblock %}
+	{% block main_menu %}		{% endblock %}
+	{% block custom_bar %}		{% endblock %}
+{% endblock %}
+
+
+left_nav
+	sidebar
+	
+	
+content_nav
+	content_title		content_tagline
+	breadcrumb
+		breadcrumbs
+	
+pre_content
+content
+
+bottom
