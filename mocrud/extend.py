@@ -80,6 +80,7 @@ class ObjectOp(FormAction):
     
     verbose_name = None
     only_id = False
+    pk = None
     
     def __init__(self,model_admin):
         self.model_admin = model_admin
@@ -87,16 +88,15 @@ class ObjectOp(FormAction):
         
     def hander(self):
         if request.method == 'GET':
-            try:
                 id_list = request.params.get('id')
                 id_list = id_list.split(',')
-                id_list = [int(e) for e in id_list if e]
-            except:
-                abort(404)
+                id_list = [e for e in id_list if e]
         else:
             id_list = request.forms.getall('id')
-        self.instances = self.only_id and id_list or self.model_admin.model.select().where(self.model_admin.pk << id_list)
-        if not self.instances:abort(404)
+        m_pk = self.pk and self.pk or 'pk'
+        m_model = self.model_admin.model
+        self.instances = self.only_id and id_list or m_model.select().where( getattr(m_model,m_pk) << id_list)
+        #if not self.instances:abort(404)
 
         if request.method == 'POST':
             form = self.OpForm(request.forms)

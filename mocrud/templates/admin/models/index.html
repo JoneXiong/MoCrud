@@ -81,7 +81,11 @@
 			{% endif %}
 			{% for op in model_admin.object_op %}
 				{% set key=op.__class__.__name__ %}
+				{% if op.pk %}
+			<li><a href="{{ url_for(model_admin.get_url_name(key), id=get_model_field(object, op.pk) ) }}">{{ op.verbose_name }}</a></li>
+				{% else %}
 			 <li><a href="{{ url_for(model_admin.get_url_name(key), id=object.get_id()) }}">{{ op.verbose_name }}</a></li>
+			 	{% endif %}
 			{% endfor %}
           </ul>
         </td>

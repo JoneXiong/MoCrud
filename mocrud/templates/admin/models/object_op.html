@@ -18,7 +18,17 @@
     </div>
   {% endif %}
   <form action="." class="form-horizontal" method="post">
-    {% for object in instances %}<input type="hidden" name="id" value="{{ object.get_id() }}" />{% endfor %}
+  	{% if cur_op.only_id %}
+    	{% for id in instances %}<input type="hidden" name="id" value="{{ id }}" />{% endfor %}
+	{% else %}
+		{% for object in instances %}
+			{% if cur_op.pk %}
+			<input type="hidden" name="id" value="{{ get_model_field(object, cur_op.pk) }}" />
+			{% else %}
+			<input type="hidden" name="id" value="{{ object.get_id() }}" />
+			{% endif %}
+		{% endfor %}
+	{% endif %}
     <fieldset>
       <legend>确定 {{ cur_op.verbose_name }}</legend>
       <ul>
