@@ -23,10 +23,10 @@
       {% endfor %}
       {% block extra_form %}{% endblock %}
       <div class="form-actions">
-        <button class="btn btn-primary" name="save" type="submit">Save</button>
-        <button class="btn" name="save_add" type="submit">Save and add new</button>
-        <button class="btn" name="save_edit" type="submit">Save and edit</button>
-        <a class="btn" href="{{ url_for(model_admin.get_url_name('index')) }}">Cancel</a>
+        <button class="btn btn-primary" name="save" type="submit">保存</button>
+        <button class="btn" name="save_add" type="submit">保存并新增</button>
+        <button class="btn" name="save_edit" type="submit">保存并编辑</button>
+        <a class="btn" href="{{ url_for(model_admin.get_url_name('index')) }}">取消</a>
       </div>
     </fieldset>
   </form>

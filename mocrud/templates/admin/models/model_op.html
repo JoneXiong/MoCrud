@@ -23,9 +23,9 @@
       {% endfor %}
       {% block extra_form %}{% endblock %}
       <div class="form-actions">
-        <button class="btn btn-primary" name="save" type="submit">Save</button>
-        <button class="btn" name="save_add" type="submit">Save and add again</button>
-        <a class="btn" href="{{ url_for(model_admin.get_url_name('index')) }}">Cancel</a>
+        <button class="btn btn-primary" name="save" type="submit">提交</button>
+        <button class="btn" name="save_add" type="submit">提交并再次</button>
+        <a class="btn" href="{{ url_for(model_admin.get_url_name('index')) }}">取消</a>
       </div>
     </fieldset>
   </form>
