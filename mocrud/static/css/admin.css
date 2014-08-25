@@ -37,6 +37,11 @@ table.table-striped td.links .inline li a {
 table.table-striped td.links .inline li:last-child a {
   border-right: medium none;
 }
-
+table th{
+    white-space:nowrap;
+}
+table td{
+    white-space:nowrap;
+}
 /* helpers */
 .hidden { display: none; }
