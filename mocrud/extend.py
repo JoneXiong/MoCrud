@@ -95,7 +95,11 @@ class ObjectOp(FormAction):
             id_list = request.forms.getall('id')
         m_pk = self.pk and self.pk or 'pk'
         m_model = self.model_admin.model
-        self.instances = self.only_id and id_list or m_model.select().where( getattr(m_model,m_pk) << id_list)
+        if self.pk:
+            m_key = getattr(m_model,self.pk)
+        else:
+            m_key = self.model_admin.pk
+        self.instances = self.only_id and id_list or m_model.select().where( m_key<< id_list)
         #if not self.instances:abort(404)
 
         if request.method == 'POST':
