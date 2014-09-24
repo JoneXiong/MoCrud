@@ -5,7 +5,7 @@
 {% block body_class %}{{ super() }} model-admin{% endblock %}
 
 {% if model_admin.show_nav %}
-	{% block content_title %}{{ model_admin.get_display_name()|fix_underscores }} 管理{{model_admin.show_nav}}{% endblock %}
+	{% block content_title %}{{ model_admin.get_display_name()|fix_underscores }} 管理{% endblock %}
 	{% block breadcrumbs %}
 	  <li><span class="divider">/</span> <a href="{{ url_for(model_admin.get_url_name('index')) }}">{{ model_admin.get_display_name()|fix_underscores }}</a></li>
 	{% endblock %}

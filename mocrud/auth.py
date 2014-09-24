@@ -45,6 +45,7 @@ class Auth(object):
         self.default_next_url = default_next_url
         
         self.check = True
+        self.autogc = False
 
         self.setup()
 

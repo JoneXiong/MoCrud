@@ -28,6 +28,7 @@ from peewee import IntegerField
 from peewee import PrimaryKeyField
 from peewee import TextField
 from peewee import TimeField
+from peewee import BigIntegerField
 
 
 __all__ = (
@@ -54,6 +55,7 @@ class ModelConverter(object):
         DoubleField: f.FloatField,
         FloatField: f.FloatField,
         IntegerField: f.IntegerField,
+        BigIntegerField: f.IntegerField,
         PrimaryKeyField: f.HiddenField,
         TextField: f.TextAreaField,
         TimeField: WPTimeField,

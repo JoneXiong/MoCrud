@@ -338,7 +338,7 @@ class ModelAdmin(object):
         try:
             instance = self.get_object(pk)
         except self.model.DoesNotExist:
-            abort(404)
+            return abort(404)
 
         Form = self.get_edit_form(instance)
 
@@ -624,19 +624,35 @@ class Admin(object):
     def auth_required(self, func):
         @functools.wraps(func)
         def inner(*args, **kwargs):
-            if  self.auth.check:
-                user = self.auth.get_logged_in_user()
-    
-                if not user:
-                    login_url = url_for('auth.login', next=get_next())
-                    return redirect(login_url)
-    
-                if not self.check_user_permission(user):
-                    abort(403)
-    
-                return func(*args, **kwargs)
+            if self.auth.autogc:
+                with self.auth.db:
+                    if  self.auth.check:
+                        user = self.auth.get_logged_in_user()
+            
+                        if not user:
+                            login_url = url_for('auth.login', next=get_next())
+                            return redirect(login_url)
+            
+                        if not self.check_user_permission(user):
+                            return abort(403)
+            
+                        return func(*args, **kwargs)
+                    else:
+                        return func(*args, **kwargs)
             else:
-                return func(*args, **kwargs)
+                if  self.auth.check:
+                    user = self.auth.get_logged_in_user()
+        
+                    if not user:
+                        login_url = url_for('auth.login', next=get_next())
+                        return redirect(login_url)
+        
+                    if not self.check_user_permission(user):
+                        return abort(403)
+        
+                    return func(*args, **kwargs)
+                else:
+                    return func(*args, **kwargs)
         return inner
 
     def check_user_permission(self, user):
