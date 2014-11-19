@@ -8,7 +8,6 @@ set_lib_path()
 
 import mocrud
 import crud_example
-#import bookM
 
 
 from mole.mole import default_app
