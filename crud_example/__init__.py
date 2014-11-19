@@ -4,7 +4,7 @@
 from mocrud.api import setup,uncheck
 import models
 setup(models)
-#uncheck()
+uncheck()
 
 ####### 自定义视图 #########
 import routes

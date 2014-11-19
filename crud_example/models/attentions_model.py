@@ -3,7 +3,7 @@
 import datetime
 
 from mocrud.auth import BaseUser
-from mocrud.db import CrudModel
+from base_model import BaseModel as CrudModel
 from mocrud.admin import ModelAdmin
 from peewee import *
 
@@ -16,7 +16,7 @@ class Attentions(CrudModel):
     
     
 class AttentionsAdmin(ModelAdmin):
-    verbose_name = u'注意事项'
+    verbose_name = u'事项'
     columns = ('autor', 'title', 'content', 'created_date',)
     exclude = ('created_date',)
     

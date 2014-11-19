@@ -2,7 +2,7 @@
 import datetime
 
 from mocrud.auth import BaseUser
-from mocrud.db import CrudModel
+from base_model import BaseModel as CrudModel
 from mocrud.admin import ModelAdmin
 from peewee import *
 from mocrud.auth import auth
