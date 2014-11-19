@@ -517,7 +517,12 @@ class AdminTemplateHelper(object):
         self.app = self.admin.app
 
     def get_model_field(self, model, field):
-        attr = getattr(model, field)
+        if field.find('.')<0:
+            attr = getattr(model, field)
+        else:
+            field_list = field.split('.')
+            attr = getattr(model, field_list[0])
+            attr = getattr(attr, field_list[1])
         if type(attr)==bool:attr=attr and u'是' or u'否'
         if attr==None:attr=''
         if callable(attr):
