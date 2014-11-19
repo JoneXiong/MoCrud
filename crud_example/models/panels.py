@@ -2,17 +2,18 @@
 import datetime
 from mole import request, redirect
 
-from mocrud.admin import Admin, ModelAdmin, AdminPanel
-from mocrud.filters import QueryFilter
+from mocrud.admin import admin, AdminPanel
+from mocrud.auth import auth
+#from mocrud.filters import QueryFilter
 
-from app import app, db
-#from auth import auth
-from models import User, Message, Note, Relationship
-from mocrud.auth import Auth
-auth = Auth(app, db, user_model=User)
+from note_model import Note
+from user_model import User
+from message_model import Message
+
 
 class NotePanel(AdminPanel):
-    template_name = 'admin/notes.html'
+    verbose_name = u'日志'
+    template_name = 'notes_panel.html'
 
     def get_urls(self):
         return (
@@ -21,12 +22,12 @@ class NotePanel(AdminPanel):
 
     def create(self):
         if request.method == 'POST':
-            if request.form.get('message'):
+            if request.forms.get('message'):
                 Note.create(
                     user=auth.get_logged_in_user(),
-                    message=request.form['message'],
+                    message=request.forms['message'],
                 )
-        next = request.form.get('next') or self.dashboard_url()
+        next = request.forms.get('next') or self.dashboard_url()
         return redirect(next)
 
     def get_context(self):
@@ -35,7 +36,8 @@ class NotePanel(AdminPanel):
         }
 
 class UserStatsPanel(AdminPanel):
-    template_name = 'admin/user_stats.html'
+    verbose_name = u'用户统计'
+    template_name = 'user_panel.html'
 
     def get_context(self):
         last_week = datetime.datetime.now() - datetime.timedelta(days=7)
@@ -46,14 +48,15 @@ class UserStatsPanel(AdminPanel):
             'messages': messages_this_week,
         }
 
-admin = Admin(app, auth)
+#admin = Admin(app, auth)
+#auth.register_admin(admin)
+#admin.register(Relationship)
+#admin.register(Note, NoteAdmin)
 
-auth.register_admin(admin)
-admin.register(Relationship)
-admin.register(Message, MessageAdmin)
-admin.register(Note, NoteAdmin)
-admin.register_panel('Notes', NotePanel)
-admin.register_panel('User stats', UserStatsPanel)
+#from zk_models import Checkinout
+#admin.register(Checkinout)
 
-from zkeco_models import Checkinout
-admin.register(Checkinout)
+admin.register_panel('notes', NotePanel)
+admin.register_panel('user_stats', UserStatsPanel)
+
+

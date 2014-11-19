@@ -1,16 +1,10 @@
-﻿# -*- coding: utf-8 -*-
-
-menus = (
-         ('aboutEmp',u'菜单组一', 'grup_chat'),
-         ('baseinfo',u'菜单组二', 'grup_chart'),
-         ('reportEmp',u'菜单组二', 'grup_disc')
-         )
+# -*- coding: utf-8 -*-
 
 ####### Crud 初始化 #######
 from mocrud.api import setup,uncheck
 import models
 setup(models)
-uncheck()
+#uncheck()
 
 ####### 自定义视图 #########
 import routes
