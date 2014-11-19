@@ -2,7 +2,6 @@
 
 
 from peewee import Model, SqliteDatabase
-from pool import PooledMySQLDatabase
 
 database = SqliteDatabase('./crud_example/example.db', check_same_thread=False, **{})
 #database = PostgresqlDatabase('pbx', **{'user': 'mocrud'})
