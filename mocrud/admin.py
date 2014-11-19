@@ -481,12 +481,12 @@ class ModelAdmin(object):
 
 
 class AdminPanel(object):
+    verbose_name = None
     template_name = 'admin/panels/default.html'
 
     def __init__(self, admin, title):
         self.admin = admin
         self.title = title
-        self.slug = slugify(self.title)
 
     def dashboard_url(self):
         return url_for('%s.index' % (self.admin.blueprint.name))
@@ -497,7 +497,7 @@ class AdminPanel(object):
     def get_url_name(self, name):
         return '%s.panel_%s_%s' % (
             self.admin.blueprint.name,
-            self.slug,
+            self.title,
             name,
         )
 
@@ -700,7 +700,7 @@ class Admin(object):
         return [ e for e in self._registry.values() if e.model_grup==grup_name]
 
     def get_panels(self):
-        return sorted(self._panels.values(), key=lambda o: o.slug)
+        return sorted(self._panels.values(), key=lambda o: o.title)
 
     def index(self):
         u'''
@@ -746,10 +746,10 @@ class Admin(object):
 
         for panel in self._panels.values():
             for url, callback in panel.get_urls():
-                full_url = '/%s%s' % (panel.slug, url)
+                full_url = '/%s%s' % (panel.title, url)
                 self.blueprint.route(
                     full_url,
-                    name='panel_%s_%s' % (panel.slug, callback.__name__),
+                    name='%s.panel_%s_%s' % (self.blueprint.name, panel.title, callback.__name__),
                     method=['GET', 'POST'],
                 )(self.auth_required(callback))
 
