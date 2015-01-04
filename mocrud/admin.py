@@ -87,6 +87,8 @@ class ModelAdmin(object):
     ops = []
     
     show_nav = True
+    
+    count = 0
 
     form_converter = AdminModelConverter
 

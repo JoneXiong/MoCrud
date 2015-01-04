@@ -6,7 +6,6 @@ from mocrud.forms import BaseModelConverter
 from peewee import *
 from wtforms import fields, form, validators, widgets
 
-from mole import request
 
 class QueryFilter(object):
     """

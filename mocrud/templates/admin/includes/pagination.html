@@ -10,5 +10,6 @@
     {% else %}
       <li class="next disabled"><a href="#">Next</a></li>
     {% endif %}
+	<li class="count disabled"><a href="#">共 {{ query.get_pages() }}页/{{ query.query.count() }}条</a></li>
   </ul>
 </div>

@@ -14,23 +14,29 @@
   <table class="table table-bordered table-striped">
     <thead>
       <tr>
-        <th class="shrink model-name">Model name</th>
-        <th class="records">Records</th>
-        <th class="shrink controls"></th>
+        <th class="shrink model-name">模型名称</th>
+        <th class="records">记录数</th>
+        <th class="shrink controls">快捷操作</th>
       </tr>
     </thead>
     <tbody>
       {% for iter_admin in model_admins %}
+	  	{% if iter_admin.visible %}
         <tr class="link">
           <td><span class="show"><a href="{{ url_for(iter_admin.get_url_name('index')) }}">{{ iter_admin.get_display_name()|fix_underscores }}</a></span></td>
           <td><span>{{ iter_admin.get_query().count() }}</span></td>
           <td class="links">
             <ul class="inline">
+              {% if 'add' not in iter_admin.method_exclude %}
               <li><a href="{{ url_for(iter_admin.get_url_name('add')) }}">新增</a></li>
+			  {% endif %}
+		      {% if 'export' not in iter_admin.method_exclude %}
               <li><a href="{{ url_for(iter_admin.get_url_name('export')) }}">导出</a></li>
+			  {% endif %}
             </ul>
           </td>
         </tr>
+		{% endif %}
       {% endfor %}
     </tbody>
   </table>

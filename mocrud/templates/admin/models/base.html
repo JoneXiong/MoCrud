@@ -16,7 +16,7 @@
 {% block pre_content %}
 <div>
   <ul class="nav nav-tabs">
-    <li class="{% block tab_index_class %}{% endblock %}"><a href="{{ url_for(model_admin.get_url_name('index')) }}?{{ request.query_string }}">{{ model_admin.get_display_name()|fix_underscores }} ({{ model_admin.get_query().count() }})</a></li>
+    <li class="{% block tab_index_class %}{% endblock %}"><a href="{{ url_for(model_admin.get_url_name('index')) }}?{{ request.query_string }}">{{ model_admin.get_display_name()|fix_underscores }}</a></li>
 	{% if 'add' not in model_admin.method_exclude %}
     <li class="{% block tab_add_class %}{% endblock %}"><a href="{{ url_for(model_admin.get_url_name('add')) }}">新增</a></li>
 	{% endif %}

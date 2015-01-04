@@ -494,7 +494,6 @@ class StringField(Field):
             self.data = ''
 
     def _value(self):
-        #print self.data,type(self.data),repr(self.data)
         try:
             m_data = self.data.decode('UTF-8')
         except:
