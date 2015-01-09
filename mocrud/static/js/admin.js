@@ -146,17 +146,37 @@ var Admin = window.Admin || {};
 
     var self = this,
         select_clone = select_elem.clone(),
-        input_clone = input_elem.clone(),
-        row = [
-          , '<div class="clearfix control-group">'
-          , '<a class="btn btn-close btn-danger" href="#" title="click to remove">'
+        input_clone = input_elem.clone();
+	if (select_clone.length==0){
+		select_clone = $('<select class="span2" id="'+ qf_s +'" name="'+ qf_s +'"><option value="0">equal to</option></select>');
+	}
+	if (input_clone.length==0){
+		field_label = ival.label;
+		if (ival.selects){
+			var m_str = '';
+			m_list = ival.selects
+			for(var i=0;i<m_list.length;i++){
+				m_str += '<option value="'+ m_list[i][0] +'">'+ m_list[i][1] +'</option>'
+			}
+			input_clone = $('<select id="'+ qf_v +'" name="'+ qf_v +'">'+ m_str +'</select>');
+		}else{
+			input_clone = $('<input id="'+ qf_v +'" name="'+ qf_v +'" value="'+ ival.val +'">');
+		}
+		ival = ival.val;
+	}
+    var row = [
+          , '<div class="clearfix control-group" style="float:left; margin-right:10px">'
+          , '<a href="#" title="click to remove">'
           , field_label
           , '</a> </div>'
         ].join('\n'),
         row_elem = $(row).append(select_clone).append(input_clone);
-
-    if (ival && sval) {
+	select_clone.hide();
+	input_clone.css("width", "100px");
+    if (sval) {
         select_clone.val(sval);
+    }
+    if (ival) {
         input_clone.val(ival);
     }
 
