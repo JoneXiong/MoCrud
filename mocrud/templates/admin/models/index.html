@@ -61,10 +61,10 @@
 			  {% if model_admin.get_primary_key() %}
               <td><a href="{% if 'edit' not in model_admin.method_exclude %}{{ url_for(model_admin.get_url_name('edit'), pk=object.get_id()) }}{% else %}#{% endif %}">{{ get_model_field(object, column) }}</a></td>
 			  {% else %}
-			  <td>{{ get_model_field(object, column)|string|truncate(length=55, killwords=True, end='...') }}</td>
+			  <td>{{ get_model_field(object, column)|string|truncate(length=550, killwords=True, end='...') }}</td>
 			  {% endif %}
             {% else %}
-              <td>{{ get_model_field(object, column)|string|truncate(length=55, killwords=True, end='...') }}</td>
+              <td>{{ get_model_field(object, column)|string|truncate(length=550, killwords=True, end='...') }}</td>
             {% endif %}
           {% endfor %}
         {% else %}
@@ -74,17 +74,17 @@
         <td class="last links">
           <ul class="inline">
           	{% if 'edit' not in model_admin.method_exclude %}
-            <li><a href="{{ url_for(model_admin.get_url_name('edit'), pk=object.get_id()) }}">编辑</a></li>
+            <li><a class="btn"  href="{{ url_for(model_admin.get_url_name('edit'), pk=object.get_id()) }}">编辑</a></li>
 			{% endif %}
 			{% if 'delete' not in model_admin.method_exclude %}
-            <li><a href="{{ url_for(model_admin.get_url_name('delete'), id=object.get_id()) }}">删除</a></li>
+            <li><a class="btn" href="{{ url_for(model_admin.get_url_name('delete'), id=object.get_id()) }}">删除</a></li>
 			{% endif %}
 			{% for op in model_admin.object_op %}
 				{% set key=op.__class__.__name__ %}
 				{% if op.pk %}
-			<li><a href="{{ url_for(model_admin.get_url_name(key), id=get_model_field(object, op.pk) ) }}">{{ op.verbose_name }}</a></li>
+			<li><a class="btn" href="{{ url_for(model_admin.get_url_name(key), id=get_model_field(object, op.pk) ) }}">{{ op.verbose_name }}</a></li>
 				{% else %}
-			 <li><a href="{{ url_for(model_admin.get_url_name(key), id=object.get_id()) }}">{{ op.verbose_name }}</a></li>
+			 <li><a class="btn" href="{{ url_for(model_admin.get_url_name(key), id=object.get_id()) }}">{{ op.verbose_name }}</a></li>
 			 	{% endif %}
 			{% endfor %}
           </ul>
