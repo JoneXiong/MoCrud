@@ -9,6 +9,7 @@ from mole import request,abort
 
 from mole.template import jinja2_template as render_template
 from peewee import Model, DoesNotExist, SelectQuery, ForeignKeyField
+from peewee import fn
 
 
 def get_object_or_404(query_or_model, *query):
@@ -43,6 +44,11 @@ class PaginatedQuery(object):
         if curr_page and curr_page.isdigit():
             return int(curr_page)
         return 1
+
+    def get_sum_list(self,*args):
+        m_select = [fn.Sum(getattr(self.model,e)) for e in args]
+        rows = self.query.select(*m_select).scalar(as_tuple=True)
+        return [ e and u'%s'%e or '' for e in rows]
 
     def get_pages(self):
         return int(math.ceil(float(self.query.count()) / self.paginate_by))

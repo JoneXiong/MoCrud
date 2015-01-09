@@ -324,10 +324,15 @@ class FilterForm(object):
                 for filter_idx, filter_value in zip(filter_idx_list, filter_value_list):
                     idx = int(filter_idx)
                     cleaned.append((qf_s, idx, qf_v, filter_value))
-                    query_filter = self._query_filters[field][idx]
-                    q_objects.append(query_filter.query(field.db_value(filter_value)))
-
-                query = query.where(reduce(operator.or_, q_objects))
+                    if filter_value and filter_value!='__None':
+                        query_filter = self._query_filters[field][idx]
+                        try:
+                            m_val = field.db_value(filter_value)
+                        except:
+                            m_val = None
+                        q_objects.append(query_filter.query(m_val))
+                if q_objects:
+                    query = query.where(reduce(operator.or_, q_objects))
 
         return form, query, cleaned
 

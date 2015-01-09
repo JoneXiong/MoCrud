@@ -105,6 +105,7 @@ class ModelAdmin(object):
     menu_grup = '_default_grup'
     visible = True
     icon_class = 'menu_interact'
+    menu_index = 0
     
     verbose_name = None
 
@@ -228,13 +229,12 @@ class ModelAdmin(object):
         return self.model._meta.get_field_names()
     
     def get_column_display(self, column_name):
+        if self.add_column_display.has_key(column_name):
+            return self.add_column_display[column_name]
         try:
             field = self.model._meta.fields[column_name]
         except KeyError:
-            if self.add_column_display.has_key(column_name):
-                return self.add_column_display[column_name]
-            else:
-                return self.admin.template_helper.fix_underscores(column_name)
+            return self.admin.template_helper.fix_underscores(column_name)
         else:
             return field.verbose_name
     
@@ -300,9 +300,9 @@ class ModelAdmin(object):
             model_admin=self,
             query=pq,
             ordering=ordering,
-            filter_form=filter_form,
-            field_tree=field_tree,
-            active_filters=cleaned,
+            filter_form=filter_form,    #过滤查询表单
+            field_tree=field_tree,  #下拉过滤器
+            active_filters=cleaned, #当前活动过滤项
             **self.get_extra_context()
         )
 
@@ -525,7 +525,9 @@ class AdminTemplateHelper(object):
             field_list = field.split('.')
             attr = getattr(model, field_list[0])
             attr = getattr(attr, field_list[1])
+            field = field.replace('.', '_')
         if type(attr)==bool:attr=attr and u'是' or u'否'
+        if hasattr( self.admin.get_admin_for(model.__class__), 'ps_'+field):attr = getattr( self.admin.get_admin_for(model.__class__), 'ps_'+field)(model)
         if attr==None:attr=''
         if callable(attr):
             return attr()
@@ -706,7 +708,7 @@ class Admin(object):
 
     def index(self):
         u'''
-        总控制面板试图
+        总控制面板视图
         '''
         return render_template('admin/index.html',
             model_admins=self.get_model_admins(),
