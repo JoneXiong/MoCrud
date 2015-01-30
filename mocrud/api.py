@@ -37,3 +37,5 @@ def create_tables():
     models = admin._registry
     for m in models:
         m.create_table(True)
+        
+valid_user = admin.auth_required

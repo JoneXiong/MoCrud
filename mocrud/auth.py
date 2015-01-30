@@ -32,7 +32,7 @@ class BaseUser(object):
 
 class Auth(object):
     def __init__(self, app, db, user_model=None, prefix='/accounts', name='auth',
-                 clear_session=False, default_next_url='/'):
+                 clear_session=False, default_next_url='/admin/'):
         self.app = app
         self.db = db
 
@@ -46,6 +46,7 @@ class Auth(object):
         
         self.check = True
         self.autogc = False
+        self.title = None
 
         self.setup()
 
@@ -198,7 +199,7 @@ class Auth(object):
         else:
             form = Form()
 
-        return render_template('auth/login.html', error=error, form=form)
+        return render_template('auth/login.html', error=error, form=form, title=self.title or 'Data Manage Center')
 
     def logout(self):
         self.logout_user(self.get_logged_in_user())
