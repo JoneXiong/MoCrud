@@ -89,6 +89,8 @@ class ModelAdmin(object):
     show_nav = True
     
     count = 0
+    
+    context = {}
 
     form_converter = AdminModelConverter
 
@@ -104,7 +106,7 @@ class ModelAdmin(object):
     
     menu_grup = '_default_grup'
     visible = True
-    icon_class = 'menu_interact'
+    icon_class = 'icon-th-list'
     menu_index = 0
     
     verbose_name = None
@@ -160,20 +162,21 @@ class ModelAdmin(object):
         form, query, cleaned = filter_form.process_request(query)
         return form, query, cleaned, filter_form._field_tree
 
-    def get_form(self, adding=False):
+    def get_form(self, adding=False, exclude=[]):
         allow_pk = adding and not self.model._meta.auto_increment
+        m_exclude = exclude and  [ e for e in self.exclude] + exclude or self.exclude
         return model_form(self.model,
             allow_pk=allow_pk,
             only=self.fields,
-            exclude=self.exclude,
+            exclude=m_exclude,
             converter=self.form_converter(self),
         )
 
     def get_add_form(self):
         return self.get_form(adding=True)
 
-    def get_edit_form(self, instance):
-        return self.get_form()
+    def get_edit_form(self, instance, exclude=[]):
+        return self.get_form(adding=False, exclude = exclude)
 
     def get_query(self):
         return self.model.select()
@@ -620,6 +623,7 @@ class Admin(object):
         self._admin_models = {}
         self._registry = {}
         self._panels = {}
+        self._pages = {}
 
         self.blueprint = self.app#self.get_blueprint(name)
         self.blueprint.name = 'admin'
@@ -690,6 +694,14 @@ class Admin(object):
     def register_panel(self, title, panel):
         panel_instance = panel(self, title)
         self._panels[title] = panel_instance
+        
+    def register_page(self, page, name=None):
+        page_instance = page(self)
+        m_name  = name or page.__name__
+        self._pages[m_name] = page_instance
+        
+    def get_pages(self):
+        return self._pages.values()
 
     def unregister_panel(self, title):
         del(self._panels[title])
@@ -756,6 +768,14 @@ class Admin(object):
                     name='%s.panel_%s_%s' % (self.blueprint.name, panel.title, callback.__name__),
                     method=['GET', 'POST'],
                 )(self.auth_required(callback))
+        
+        for page in self._pages.values():
+            full_url = '%s/fp/%s/' % (self.url_prefix,page.__class__.__name__)
+            self.blueprint.route(
+                full_url,
+                name='%s.page_%s' % (self.blueprint.name, page.__class__.__name__),
+                method=['GET', 'POST'],
+            )(self.auth_required(page.hander))
 
     def setup(self):
         self.configure_routes()

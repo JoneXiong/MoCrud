@@ -1,0 +1,30 @@
+{% extends "admin/base.html" if cur.show_nav else "admin/hide_nav.html" %}
+
+{% from 'macros/forms.html' import admin_field %}
+
+{% block body_class %}{{ super() }} model-admin{% endblock %}
+
+
+{% block content_title %}{{apps_dict[model_grup]}}主页{% endblock %}
+
+{% block content %}
+
+  {% if form.errors %}
+    <div class="alert alert-block alert-error">
+      <a class="close" data-dismiss="alert" href="#">×</a>
+      <p>There were errors with your form submission</p>
+    </div>
+  {% endif %}
+  <form method="post" action="." class="add form-horizontal" enctype="multipart/form-data">
+    <fieldset>
+      <legend>{{ cur.verbose_name }} </legend>
+      {% for field in form %}
+        {{ admin_field(field) }}
+      {% endfor %}
+      {% block extra_form %}{% endblock %}
+      <div class="form-actions">
+        <button class="btn btn-primary" name="save" type="submit">提交</button>
+      </div>
+    </fieldset>
+  </form>
+{% endblock %}

@@ -8,29 +8,31 @@ from utils import flash
 
 class FormAction(Form):
     
-    template = None
-    OpForm = Form
+    template = None #页面模板
+    OpForm = Form   #表单定义
     
     def init(self, form, request):
+        u'''页面初始化时执行'''
         pass
     
     def action(self, form, request):
+        u'''表单提交时执行'''
         pass
     
     def hander(self):
         if request.method == 'POST':
             form = self.OpForm(request.forms)
             if form.validate():
-                res =  self.action(form)
+                res =  self.action(form, request)
                 if res:
                     return res
         else:
             form = self.OpForm()
-            res = self.init(form)
+            res = self.init(form, request)
             if res:
                 return res
             
-        return render_template(self.template, form=form)
+        return render_template(self.template, form=form, cur = self)
         
 class ModelOp(FormAction):
     
@@ -133,3 +135,48 @@ class ObjectOp(FormAction):
             return self.template
         else:
             return 'admin/models/object_op.html'
+        
+class FormPage(FormAction):
+    
+    show_nav = True
+    
+    verbose_name = None
+    menu_grup = '_default_grup'
+    visible = True
+    icon_class = 'icon-th-list'
+    menu_index = 0
+    
+    app_menu =None
+    context = {}
+    
+    def __init__(self,admin):
+        self.admin = admin
+        self.name = None
+    
+    def hander(self):
+        if request.method == 'POST':
+            form = self.OpForm(request.forms)
+            if form.validate():
+                res =  self.action(form, request)
+                if res:
+                    return res
+        else:
+            form = self.OpForm()
+            res = self.init(form, request)
+            if res:
+                return res
+
+        return render_template(self._get_template(),
+            form=form,
+            cur = self,
+            model_grup = self.app_menu,
+            model_name = self.__class__.__name__,
+            model_admins=self.app_menu and self.admin.get_grup_admins(self.app_menu) or self.admin.get_model_admins(),
+            **self.admin.template_helper.get_model_admins()
+        )
+    
+    def _get_template(self):
+        if self.template:
+            return self.template
+        else:
+            return 'admin/form_page.html'
