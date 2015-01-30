@@ -5,8 +5,6 @@
  <li><span class="divider">/</span> <a href=".">{{ cur_op.verbose_name }}</a></li>
 {% endblock %}
 
-{% block tab_add_class %}active{% endblock %}
-
 {% block content %}
   {% include "admin/includes/form_raw_id.html" %}
   {% if form.errors %}

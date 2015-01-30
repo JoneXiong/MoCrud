@@ -38,7 +38,7 @@
         <a class="brand" href="{{ url_for('admin.index') }}">Mole Crud <small>{{ branding }}</small></a>
 		{% block main_menu %}
         <ul class="nav">
-          <li><a href="{{ url_for('admin.index') }}">面板</a></li>
+          <li><a href="{{ url_for('admin.index') }}"><i class="icon-home"></i>面板</a></li>
 		  {% if apps %}
 		  	{% for label, app_verb in apps %}
           <li{% if model_grup == label %} class="active"{% endif %}><a href="/admin/{{label}}">{{app_verb}}</a></li>
@@ -66,20 +66,22 @@
         <div class="well sidebar-nav">
           {% block sidebar %}
 			{% if get_app_nemus %} {# MoSys环境 #}
+				<ul id="nav" class="nav nav-pills nav-stacked main-menu">
 				{% for grup_verb, icon_class ,menus in get_app_nemus(model_grup) %}
-				<h3>{{ grup_verb }}</h3>
-				<ul id="nav" class="nav nav-list">
+				
+						<h3 class="nav-header">{{ grup_verb }}</h3>
 						{% for menu in menus %}
-							<li{% if model_name== menu[3] %} class="active"{% endif %}><a href="{{ menu[1] }}">{{ menu[0]}}</a></li>
+							<li{% if model_name== menu[3] %} class="active"{% endif %}><a href="{{ menu[1] }}"><i class="{{menu[2]}}"></i>  {{ menu[0]}}</a></li>
 						{% endfor %}
-				</ul>
+				
 				{% endfor %}
+				</ul>
 			{% else %}	{# Mole环境 #}
-				<h3>导航</h3>
-				<ul id="nav" class="nav nav-list">
+				<ul id="nav" class="nav nav-pills nav-stacked main-menu">
+						<h3 class="nav-header">导航</h3>
 						{% for iter_admin in model_admins %}
 							{% if iter_admin.visible %}
-							<li{% if model_name== iter_admin.get_admin_name() %} class="active"{% endif %}><a href="{{ url_for(iter_admin.get_url_name('index')) }}">{{ iter_admin.get_display_name()|fix_underscores }}</a></li>
+							<li{% if model_name== iter_admin.get_admin_name() %} class="active"{% endif %}><a href="{{ url_for(iter_admin.get_url_name('index')) }}"><i class="{{iter_admin.icon_class}}"></i>  {{ iter_admin.get_display_name()|fix_underscores }}</a></li>
 							{% endif %}
 						{% endfor %}
 				</ul>

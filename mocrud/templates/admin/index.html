@@ -3,11 +3,11 @@
 {% block content_title %}我的面板{% endblock %}
 
 {% block sidebar %}
-<h3>我的常用操作</h3>
-			<ul id="nav" class="nav nav-list">
+			<ul id="nav" class="nav nav-pills nav-stacked main-menu">
+					<h3 class="nav-header">我的常用操作</h3>
 					{% for iter_admin in model_admins %}
 						{% if iter_admin.visible %}
-						<li{% if model_name== iter_admin.get_admin_name() %} class="active"{% endif %}><a href="{{ url_for(iter_admin.get_url_name('index')) }}">{{ iter_admin.get_display_name()|fix_underscores }}</a></li>
+						<li{% if model_name== iter_admin.get_admin_name() %} class="active"{% endif %}><a href="{{ url_for(iter_admin.get_url_name('index')) }}"><i class="{{iter_admin.icon_class}}"></i>  {{ iter_admin.get_display_name()|fix_underscores }}</a></li>
 						{% endif %}
 					{% endfor %}
 			</ul>
