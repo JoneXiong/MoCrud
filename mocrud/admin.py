@@ -517,13 +517,20 @@ class AdminPanel(object):
 
 
 class AdminTemplateHelper(object):
+    
     def __init__(self, admin):
         self.admin = admin  # 指针回路
         self.app = self.admin.app
 
     def get_model_field(self, model, field):
+        u'''获取字段值'''
         if field.find('.')<0:
             attr = getattr(model, field)
+            if model._meta.fields.has_key(field):
+                m_fields = model._meta.fields
+                if m_fields[field].choices:
+                    m_dict = dict(m_fields[field].choices)
+                    attr = m_dict.get(attr,attr)
         else:
             field_list = field.split('.')
             attr = getattr(model, field_list[0])

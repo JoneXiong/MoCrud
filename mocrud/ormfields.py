@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Useful form fields for use with the Peewee ORM.
 (cribbed from wtforms.ext.django.fields)
