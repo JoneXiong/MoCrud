@@ -39,3 +39,4 @@ def create_tables():
         m.create_table(True)
         
 valid_user = admin.auth_required
+auth_required = admin.auth_required

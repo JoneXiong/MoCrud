@@ -11,6 +11,7 @@ from peewee import *
 from wtforms import Form, TextField, PasswordField, validators
 
 from mocrud.utils import get_next, make_password, check_password
+from mocrud import db
 
 
 current_dir = os.path.dirname(__file__)
@@ -18,6 +19,7 @@ current_dir = os.path.dirname(__file__)
 
 
 class LoginForm(Form):
+    u'''登录表单'''
     username = TextField('Username', validators=[validators.Required()])
     password = PasswordField('Password', validators=[validators.Required()])
 
@@ -54,7 +56,7 @@ class Auth(object):
         return {'user': self.get_logged_in_user()}
 
     def get_user_model(self):
-        class User(self.db.Model, BaseUser):
+        class User(db.CrudModel, BaseUser):
             id = PrimaryKeyField()
             username = CharField(unique=True)
             password = CharField()
@@ -233,5 +235,4 @@ class Auth(object):
 #        self.register_handlers()
 #        self.register_context_processors()
 from mocrud import m_app
-from mocrud.db import db
-auth = Auth(m_app, db)
+auth = Auth(m_app, db.db)

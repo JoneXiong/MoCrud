@@ -17,7 +17,7 @@ from mocrud.filters import FilterMapping, FilterForm, FilterModelConverter
 from mocrud.forms import BaseModelConverter, ChosenAjaxSelectWidget, LimitedModelSelectField
 from mocrud.serializer import Serializer
 from mocrud.utils import get_next, PaginatedQuery, path_to_models, slugify
-from mocrud.auth import Auth
+#from mocrud.auth import Auth
 
 from peewee import BooleanField, DateTimeField, ForeignKeyField, DateField, TextField
 #from werkzeug import Headers

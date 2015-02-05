@@ -51,19 +51,25 @@ class Database(object):
     def register_handlers(self):
         self.app.before_request(self.connect_db)
         self.app.teardown_request(self.close_db)
-        
-crud_db_config =  {
-    'name': 'example.db',
-    'engine': 'peewee.SqliteDatabase',
-    'check_same_thread': False,
-}
+
+db = None        
 from mocrud import conf
 if conf:
+    if hasattr(conf,'crud_db'):
+        if conf.crud_db:
+            db = conf.crud_db
     if hasattr(conf,'crud_db_config'):
         if conf.crud_db_config:
             crud_db_config = conf.crud_db_config
-db = Database(crud_db_config)
+            db = Database(crud_db_config).database
+if db==None:
+    crud_db_config =  {
+        'name': 'example.db',
+        'engine': 'peewee.SqliteDatabase',
+        'check_same_thread': False,
+    }
+    db = Database(crud_db_config).database
         
 class CrudModel(Model):
     class Meta:
-        database = db.database
+        database = db
