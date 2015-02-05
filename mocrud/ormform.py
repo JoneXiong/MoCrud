@@ -10,6 +10,7 @@ from wtforms import ValidationError
 from wtforms import validators
 from ormfields import ModelSelectField
 from ormfields import SelectChoicesField
+from ormfields import SelectQueryField
 from ormfields import WPDateField
 from ormfields import WPDateTimeField
 from ormfields import WPTimeField
