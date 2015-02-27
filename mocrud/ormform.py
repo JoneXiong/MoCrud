@@ -10,6 +10,7 @@ from wtforms import ValidationError
 from wtforms import validators
 from ormfields import ModelSelectField
 from ormfields import SelectChoicesField
+from ormfields import SelectMultipleChoicesField
 from ormfields import SelectQueryField
 from ormfields import WPDateField
 from ormfields import WPDateTimeField
@@ -106,7 +107,7 @@ class ModelConverter(object):
             # Treat empty string as None when converting.
             kwargs['filters'].append(handle_null_filter)
 
-        if (field.null or (field.default is not None)) and not field.choices:
+        if (field.null or (field.default is not None)):
             # If the field can be empty, or has a default value, do not require
             # it when submitting a form.
             kwargs['validators'].append(validators.Optional())
@@ -123,7 +124,10 @@ class ModelConverter(object):
                 # filters.
                 kwargs.pop('filters')
             if field.choices or 'choices' in kwargs:
-                choices = kwargs.pop('choices', field.choices)
+                if type(field.choices)==str:
+                    choices = getattr(model,field.choices)()
+                else:
+                    choices = kwargs.pop('choices', field.choices)
                 if field_class in self.coerce_settings or 'coerce' in kwargs:
                     coerce_fn = kwargs.pop('coerce',
                                            self.coerce_settings[field_class])
@@ -132,8 +136,10 @@ class ModelConverter(object):
                         'choices': choices,
                         'coerce': coerce_fn,
                         'allow_blank': allow_blank})
-
-                    return FieldInfo(field.name, SelectChoicesField(**kwargs))
+                    if not field.spliter:
+                        return FieldInfo(field.name, SelectChoicesField(**kwargs))
+                    else:
+                        return FieldInfo(field.name, SelectMultipleChoicesField(**kwargs))
 
             return FieldInfo(field.name, self.defaults[field_class](**kwargs))
 

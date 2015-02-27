@@ -36,8 +36,8 @@ class BooleanSelectField(fields.SelectFieldBase):
     widget = widgets.Select()
 
     def iter_choices(self):
-        yield ('1', 'True', self.data)
-        yield ('', 'False', not self.data)
+        yield ('1', u'是', self.data)
+        yield ('', u'否', not self.data)
 
     def process_data(self, value):
         try:
@@ -138,13 +138,38 @@ class ChosenSelectWidget(widgets.Select):
 
         You must include chosen.js for styling to work.
     """
+    
     def __call__(self, field, **kwargs):
         if field.allow_blank and not self.multiple:
             kwargs['data-role'] = u'chosenblank'
         else:
             kwargs['data-role'] = u'chosen'
-
-        return super(ChosenSelectWidget, self).__call__(field, **kwargs)
+        
+        kwargs.setdefault('id', field.id)
+        if self.multiple:
+            kwargs['multiple'] = True
+        html = ['<select %s>' % html_params(name=field.name, **kwargs)]
+        first_flag = True
+        pre_group = None
+        for val, label, selected in field.iter_choices():
+            m_index = label.find('|')
+            if m_index==-1:
+                if pre_group:
+                    html.append('</optgroup>')
+                html.append(self.render_option(val, label, selected))
+            else:
+                group = label[:m_index]
+                _label = label[m_index+1:]
+                if group==pre_group:
+                    pass
+                else:
+                    html.append('</optgroup><optgroup label="%s">'%group)
+                html.append(self.render_option(val, _label, selected))
+                pre_group = group
+        if pre_group:
+            html.append('</optgroup>')
+        html.append('</select>')
+        return HTMLString(''.join(html))
 
 
 class SelectChoicesField(fields.SelectField):
@@ -186,6 +211,59 @@ class SelectChoicesField(fields.SelectField):
         if self.allow_blank and self.data is None:
             return
         super(SelectChoicesField, self).pre_validate(form)
+        
+class SelectMultipleChoicesField(SelectChoicesField):
+    widget =  ChosenSelectWidget(multiple=True)
+
+    def __init__(self, *args, **kwargs):
+        self.allow_blank = kwargs.pop('allow_blank', False)
+        self.spliter = kwargs.pop('spliter', ',')
+        super(SelectMultipleChoicesField, self).__init__(*args, **kwargs)
+
+    def get_model_list(self, pk_list):
+        if pk_list:
+            m_dict = dict(self.choices)
+            return self.spliter.join(pk_list)
+        return None
+
+    def _get_data(self):
+        if self._formdata is not None:
+            self._set_data(self.get_model_list(self._formdata))
+        return self._data or []
+
+    def _set_data(self, data):
+        self._data = data
+        self._formdata = None
+
+    data = property(_get_data, _set_data)
+
+    def __call__(self, **kwargs):
+        if 'value' in kwargs:
+            self._set_data(self.get_model_list(kwargs['value']))
+        return self.widget(self, **kwargs)
+            
+    def iter_choices(self):
+        m_dict = dict(self.choices)
+        for obj in self.choices:
+            if self.data:
+                pk_list = self.data.split(self.spliter)
+                m_list = [ (e, m_dict[e]) for e in pk_list]
+            else:
+                m_list = []
+            yield (obj[0], obj[1], obj in m_list)
+
+    def process_formdata(self, valuelist):
+        if valuelist:
+            self._data = []
+            self._formdata = valuelist
+
+    def pre_validate(self, form):
+        if self.data:
+            pk_list = self.data.split(self.spliter)
+            pk_all = [e[0] for e in self.choices]
+            for e in pk_list:
+                if not e in pk_all:
+                    raise ValidationError(self.gettext('Not a valid choice'))
 
 
 class SelectQueryField(fields.SelectFieldBase):
