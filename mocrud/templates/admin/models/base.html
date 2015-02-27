@@ -17,14 +17,16 @@
 <div>
   <ul class="nav nav-tabs">
     <li class="{% block tab_index_class %}{% endblock %}"><a href="{{ url_for(model_admin.get_url_name('index')) }}?{{ request.query_string }}">{{ model_admin.get_display_name()|fix_underscores }}</a></li>
-	{% if 'add' not in model_admin.method_exclude %}
+	{% if model_admin.check_display('add') %}
     <li class="{% block tab_add_class %}{% endblock %}"><a href="{{ url_for(model_admin.get_url_name('add')) }}">新增</a></li>
 	{% endif %}
 	{% for op in model_admin.model_op %}
 		{% set key=op.__class__.__name__ %}
+		{% if model_admin.check_display(key) %}
 	<li class="{% if cur_op %}{% if key==cur_op.__class__.__name__ %}active{% endif %}{% endif %}"><a href="{{ url_for(model_admin.get_url_name(key)) }}">{{ op.verbose_name }}</a></li>
+		{% endif %}
 	{% endfor %}
-	{% if 'export' not in model_admin.method_exclude %}
+	{% if model_admin.check_display('export') %}
     <li class="{% block tab_export_class %}{% endblock %}"><a href="{{ url_for(model_admin.get_url_name('export')) }}?{{ request.query_string }}">导出</a></li>
 	{% endif %}
     {% block extra_tabs %}{% endblock %}

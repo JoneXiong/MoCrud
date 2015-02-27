@@ -6,7 +6,7 @@
 			<ul id="nav" class="nav nav-pills nav-stacked main-menu">
 					<h3 class="nav-header">我的常用操作</h3>
 					{% for iter_admin in model_admins %}
-						{% if iter_admin.visible %}
+						{% if iter_admin.check_display('index') %}
 						<li{% if model_name== iter_admin.get_admin_name() %} class="active"{% endif %}><a href="{{ url_for(iter_admin.get_url_name('index')) }}"><i class="{{iter_admin.icon_class}}"></i>  {{ iter_admin.get_display_name()|fix_underscores }}</a></li>
 						{% endif %}
 					{% endfor %}
@@ -32,16 +32,16 @@
     </thead>
     <tbody>
       {% for iter_admin in model_admins %}
-	  	{% if iter_admin.visible %}
+	  	{% if iter_admin.check_display('index') %}
         <tr class="link">
           <td><span class="show"><a href="{{ url_for(iter_admin.get_url_name('index')) }}">{{ iter_admin.get_display_name()|fix_underscores }}</a></span></td>
           <td><span>{{ iter_admin.get_query().count() }}</span></td>
           <td class="links">
             <ul class="inline">
-              {% if 'add' not in iter_admin.method_exclude %}
+              {% if iter_admin.check_display('add') %}
               <li><a href="{{ url_for(iter_admin.get_url_name('add')) }}">新增</a></li>
 			  {% endif %}
-		      {% if 'export' not in iter_admin.method_exclude %}
+		      {% if iter_admin.check_display('export') %}
               <li><a href="{{ url_for(iter_admin.get_url_name('export')) }}">导出</a></li>
 			  {% endif %}
             </ul>

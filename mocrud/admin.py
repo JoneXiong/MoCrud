@@ -28,6 +28,7 @@ from ormform import model_form
 
 current_dir = os.path.dirname(__file__)
 
+method_dic = { "index": u"查看", "add": u"新增", "edit": u"更新", "delete": u"删除", "export": u"导出"}
 
 class AdminModelConverter(BaseModelConverter):
     def __init__(self, model_admin, additional=None):
@@ -147,6 +148,9 @@ class ModelAdmin(object):
             self.get_admin_name(),
             name,
         )
+        
+    def get_menu_key(self):
+        return self.get_url_name("index")
 
     def get_filter_form(self):
         return FilterForm(
@@ -252,6 +256,21 @@ class ModelAdmin(object):
             return self.verbose_name
         else:
             return self.model.__name__
+        
+    def check_display(self,key):
+        if key in self.method_exclude:
+            return False
+        if key=='index' and not self.visible:
+            return False
+        m_auth = self.admin.auth
+        if not m_auth.Role:
+            return True
+        user = m_auth.get_logged_in_user()
+        permkey = self.get_url_name(key)
+        if user:
+            return self.admin.check_user_permission(user, permkey)
+        else:
+            return False
 
     def get_admin_name(self):
         return slugify(self.model.__name__)
@@ -277,6 +296,7 @@ class ModelAdmin(object):
         m_dic['model_grup'] = self.model_grup
         m_dic['model_admins'] = self.admin.get_grup_admins(self.model_grup)
         m_dic['model_name'] = self.get_admin_name()
+        m_dic['model_menu_key'] = self.get_menu_key()
         return m_dic
 
     def index(self):
@@ -631,6 +651,8 @@ class Admin(object):
         self._registry = {}
         self._panels = {}
         self._pages = {}
+        
+        self.perms = []
 
         self.blueprint = self.app#self.get_blueprint(name)
         self.blueprint.name = 'admin'
@@ -641,7 +663,7 @@ class Admin(object):
 
         self.branding = branding
 
-    def auth_required(self, func):
+    def auth_required(self, func, perm_key=None):
         @functools.wraps(func)
         def inner(*args, **kwargs):
             if self.auth.autogc:
@@ -653,7 +675,7 @@ class Admin(object):
                             login_url = url_for('auth.login', next=get_next())
                             return redirect(login_url)
             
-                        if not self.check_user_permission(user):
+                        if not self.check_user_permission(user, perm_key):
                             return abort(403)
             
                         return func(*args, **kwargs)
@@ -667,7 +689,7 @@ class Admin(object):
                         login_url = url_for('auth.login', next=get_next())
                         return redirect(login_url)
         
-                    if not self.check_user_permission(user):
+                    if not self.check_user_permission(user, perm_key):
                         return abort(403)
         
                     return func(*args, **kwargs)
@@ -675,8 +697,19 @@ class Admin(object):
                     return func(*args, **kwargs)
         return inner
 
-    def check_user_permission(self, user):
-        return user.admin
+    def check_user_permission(self, user, perm_key=None):
+        if user.admin:
+            return True
+        elif perm_key:
+            return perm_key in user.get_perm_list()
+        else:
+            return True
+        
+    def get_op_permkey(self, madmin, callback):
+        return madmin.get_url_name(callback.__name__!='hander' and callback.__name__ or callback.im_class.__name__)
+    
+    def get_page_permkey(self, page):
+        return '%s.page_%s' % (self.blueprint.name, page.__class__.__name__)
 
     def get_urls(self):
         return (
@@ -709,6 +742,9 @@ class Admin(object):
         
     def get_pages(self):
         return self._pages.values()
+    
+    def get_perms(self):
+        return self.perms
 
     def unregister_panel(self, title):
         del(self._panels[title])
@@ -761,11 +797,16 @@ class Admin(object):
             admin_name = model_admin.get_admin_name()
             for url, callback in model_admin.get_urls():
                 full_url = '%s/%s%s' % (self.url_prefix,admin_name, url)
+                m_key = model_admin.get_url_name(callback.__name__!='hander' and callback.__name__ or callback.im_class.__name__)#'admin.%s_%s' % (admin_name, callback.__name__),
+                m_verbose = callback.__name__!='hander' and method_dic.get(callback.__name__,callback.__name__) or (callback.im_class.verbose_name or callback.im_class.__name__)
+                group_verbose = model_admin.verbose_name or admin_name
+                m_verbose = group_verbose + '-' + m_verbose
+                self.perms.append( (m_key, group_verbose + '|' + m_verbose) )
                 self.blueprint.route(
                     full_url,
-                    name= model_admin.get_url_name(callback.__name__!='hander' and callback.__name__ or callback.im_class.__name__),#'admin.%s_%s' % (admin_name, callback.__name__),
+                    name= m_key,
                     method=['GET', 'POST'],
-                )(self.auth_required(callback))
+                )(self.auth_required(callback, m_key))
 
         for panel in self._panels.values():
             for url, callback in panel.get_urls():
@@ -778,11 +819,14 @@ class Admin(object):
         
         for page in self._pages.values():
             full_url = '%s/fp/%s/' % (self.url_prefix,page.__class__.__name__)
+            m_key = self.get_page_permkey(page)#'%s.page_%s' % (self.blueprint.name, page.__class__.__name__)
+            m_verbose = page.verbose_name or page.__class__.__name__
+            self.perms.append( (m_key, m_verbose) )
             self.blueprint.route(
                 full_url,
-                name='%s.page_%s' % (self.blueprint.name, page.__class__.__name__),
+                name=m_key,
                 method=['GET', 'POST'],
-            )(self.auth_required(page.hander))
+            )(self.auth_required(page.hander, m_key))
 
     def setup(self):
         self.configure_routes()

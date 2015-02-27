@@ -68,19 +68,19 @@
 			{% if get_app_nemus %} {# MoSys环境 #}
 				<ul id="nav" class="nav nav-pills nav-stacked main-menu">
 				{% for grup_verb, icon_class ,menus in get_app_nemus(model_grup) %}
-				
+					{% if menus %}
 						<h3 class="nav-header">{{ grup_verb }}</h3>
 						{% for menu in menus %}
-							<li{% if model_name== menu[3] %} class="active"{% endif %}><a href="{{ menu[1] }}"><i class="{{menu[2]}}"></i>  {{ menu[0]}}</a></li>
+							<li{% if model_menu_key== menu[3] %} class="active"{% endif %}><a href="{{ menu[1] }}"><i class="{{menu[2]}}"></i>  {{ menu[0]}}</a></li>
 						{% endfor %}
-				
+					{% endif %}
 				{% endfor %}
 				</ul>
 			{% else %}	{# Mole环境 #}
 				<ul id="nav" class="nav nav-pills nav-stacked main-menu">
 						<h3 class="nav-header">导航</h3>
 						{% for iter_admin in model_admins %}
-							{% if iter_admin.visible %}
+							{% if iter_admin.check_display('index') %}
 							<li{% if model_name== iter_admin.get_admin_name() %} class="active"{% endif %}><a href="{{ url_for(iter_admin.get_url_name('index')) }}"><i class="{{iter_admin.icon_class}}"></i>  {{ iter_admin.get_display_name()|fix_underscores }}</a></li>
 							{% endif %}
 						{% endfor %}

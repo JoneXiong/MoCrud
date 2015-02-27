@@ -7,15 +7,17 @@
     <li class="dropdown" style="float:right">
       <a class="dropdown-toggle" data-toggle="dropdown" href="#">操作... <span class="caret" /></a>
       <ul class="dropdown-menu pull-right">
-      	{% if 'export' not in model_admin.method_exclude %}
+      	{% if model_admin.check_display('export') %}
         <li><a href="#" onclick="Admin.index_submit('export');">导出</a></li>
 		{% endif %}
-		{% if 'delete' not in model_admin.method_exclude %}
+		{% if model_admin.check_display('delete') %}
         <li><a href="#" onclick="Admin.index_submit('delete');">删除</a></li>
 		{% endif %}
 		{% for op in model_admin.object_op %}
 			{% set key=op.__class__.__name__ %}
+			{% if model_admin.check_display(key) %}
 		 <li><a href="#" onclick="Admin.index_submit('{{ key }}');">{{ op.verbose_name }}</a></li>
+		 	{% endif %}
 		{% endfor %}
       </ul>
     </li>
@@ -59,7 +61,7 @@
           {% for column in model_admin.columns or model_admin.get_columns() if column %}
             {% if loop.index == 1 %}
 			  {% if model_admin.get_primary_key() %}
-              <td><a href="{% if 'edit' not in model_admin.method_exclude %}{{ url_for(model_admin.get_url_name('edit'), pk=object.get_id()) }}{% else %}#{% endif %}">{{ get_model_field(object, column) }}</a></td>
+              <td><a href="{% if model_admin.check_display('edit') %}{{ url_for(model_admin.get_url_name('edit'), pk=object.get_id()) }}{% else %}#{% endif %}">{{ get_model_field(object, column) }}</a></td>
 			  {% else %}
 			  <td>{{ get_model_field(object, column)|string|truncate(length=550, killwords=True, end='...') }}</td>
 			  {% endif %}
@@ -68,24 +70,26 @@
             {% endif %}
           {% endfor %}
         {% else %}
-          <td><a href="{% if 'edit' not in model_admin.method_exclude %}{{ url_for(model_admin.get_url_name('edit'), pk=object.get_id()) }}{% else %}#{% endif %}">{{ object }}</a></td>
+          <td><a href="{% if model_admin.check_display('edit') %}{{ url_for(model_admin.get_url_name('edit'), pk=object.get_id()) }}{% else %}#{% endif %}">{{ object }}</a></td>
         {% endif %}
 		{% if model_admin.get_primary_key() or model_admin.object_op %}
         <td class="last links">
           <ul class="inline">
-          	{% if 'edit' not in model_admin.method_exclude %}
+          	{% if model_admin.check_display('edit') %}
             <li><a class="btn"  href="{{ url_for(model_admin.get_url_name('edit'), pk=object.get_id()) }}">编辑</a></li>
 			{% endif %}
-			{% if 'delete' not in model_admin.method_exclude %}
+			{% if model_admin.check_display('delete') %}
             <li><a class="btn" href="{{ url_for(model_admin.get_url_name('delete'), id=object.get_id()) }}">删除</a></li>
 			{% endif %}
 			{% for op in model_admin.object_op %}
 				{% set key=op.__class__.__name__ %}
-				{% if op.pk %}
-			<li><a class="btn" href="{{ url_for(model_admin.get_url_name(key), id=get_model_field(object, op.pk) ) }}">{{ op.verbose_name }}</a></li>
-				{% else %}
-			 <li><a class="btn" href="{{ url_for(model_admin.get_url_name(key), id=object.get_id()) }}">{{ op.verbose_name }}</a></li>
-			 	{% endif %}
+				{% if model_admin.check_display(key) %}
+					{% if op.pk %}
+				<li><a class="btn" href="{{ url_for(model_admin.get_url_name(key), id=get_model_field(object, op.pk) ) }}">{{ op.verbose_name }}</a></li>
+					{% else %}
+				 <li><a class="btn" href="{{ url_for(model_admin.get_url_name(key), id=object.get_id()) }}">{{ op.verbose_name }}</a></li>
+				 	{% endif %}
+				{% endif %}
 			{% endfor %}
           </ul>
         </td>

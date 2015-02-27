@@ -171,6 +171,7 @@ class FormPage(FormAction):
             cur = self,
             model_grup = self.app_menu,
             model_name = self.__class__.__name__,
+            model_menu_key = self.admin.get_page_permkey(self),
             model_admins=self.app_menu and self.admin.get_grup_admins(self.app_menu) or self.admin.get_model_admins(),
             **self.admin.template_helper.get_model_admins()
         )

@@ -29,7 +29,7 @@
         <button class="btn" name="save_add" type="submit">保存并新增</button>
         <button class="btn" name="save_edit" type="submit">保存并编辑</button>
         <a class="btn" href="{{ url_for(model_admin.get_url_name('index')) }}">取消</a>
-		{% if 'delete' not in model_admin.method_exclude %}
+		{% if model_admin.check_display('delete') %}
         <a class="btn btn-danger pull-right" href="{{ url_for(model_admin.get_url_name('delete'), id=instance.get_id()) }}">删除</a>
 		{% endif %}
       </div>

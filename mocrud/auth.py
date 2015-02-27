@@ -38,7 +38,11 @@ class Auth(object):
         self.app = app
         self.db = db
 
-        self.User = user_model or self.get_user_model()
+        self.User = None#user_model or self.get_user_model()
+        self.Permission = None#self.get_perm_model()
+        self.Role = None#self.get_role_model()
+        self.RolePerm = None#self.get_roleperm_model()
+        self.UserRole = None#self.get_userrole_model()
 
         self.blueprint = self.app#self.get_blueprint(name)
         self.url_prefix = prefix
@@ -56,18 +60,34 @@ class Auth(object):
         return {'user': self.get_logged_in_user()}
 
     def get_user_model(self):
-        class User(db.CrudModel, BaseUser):
-            id = PrimaryKeyField()
-            username = CharField(unique=True)
-            password = CharField()
-            email = CharField(unique=True)
-            active = BooleanField()
-            admin = BooleanField(default=False)
-
-            def __unicode__(self):
-                return self.username
-
+        from user import User
+#        class User(db.CrudModel, BaseUser):
+#            id = PrimaryKeyField()
+#            username = CharField(unique=True)
+#            password = CharField()
+#            email = CharField(unique=True)
+#            active = BooleanField()
+#            admin = BooleanField(default=False)
+#
+#            def __unicode__(self):
+#                return self.username
         return User
+    
+    def get_perm_model(self):
+        from user import Permission
+        return Permission
+    
+    def get_role_model(self):
+        from user import Role
+        return Role
+    
+    def get_roleperm_model(self):
+        from user import RolePerm
+        return RolePerm
+    
+    def get_userrole_model(self):
+        from user import UserRole
+        return UserRole
 
     def get_model_admin(self, model_admin=None):
         if model_admin is None:
@@ -133,9 +153,9 @@ class Auth(object):
         return self.test_user(lambda u: u.admin)(func)
 
     def authenticate(self, username, password):
-        active = self.User.select().where(self.User.active==True)
+        query = self.User.select().where(self.User.active==True)
         try:
-            user = active.where(self.User.username==username).get()
+            user = query.where(self.User.username==username).get()
         except self.User.DoesNotExist:
             return False
         else:
