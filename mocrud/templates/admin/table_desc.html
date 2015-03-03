@@ -1,0 +1,32 @@
+{% extends "admin/hide_nav.html" %}
+
+{% block content_title %}数据库表结构{% endblock %}
+
+{% block content %}
+
+{% for iter_admin in model_admins %}
+<h3>{{ iter_admin.get_display_name()|fix_underscores }}表</h3><div style="padding:6px">{{ iter_admin.model._meta.db_table }}</div>
+
+  <table class="table table-bordered table-striped">
+    <thead>
+      <tr>
+        <th width="25%">字段</th>
+        <th width="25%">类型</th>
+		<th width="15%">允许空</th>
+        <th width="35%">描述</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for name, model_field in iter_admin.model._meta.get_sorted_fields() %}
+        <tr class="link">
+          <td><span>{{ model_field.db_column }}</span></td>
+          <td><span>{{ model_field.get_db_field() }}</span></td>
+		  <td><span>{{ model_field.null }}</span></td>
+		  <td><span>{{ model_field.verbose_name }}</span></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endfor %}
+  
+{% endblock %}

@@ -714,6 +714,7 @@ class Admin(object):
     def get_urls(self):
         return (
             ('/', self.auth_required(self.index)),
+            ('/database', self.table_desc),
         )
 
     def __contains__(self, item):
@@ -768,6 +769,15 @@ class Admin(object):
         return render_template('admin/index.html',
             model_admins=self.get_model_admins(),
             panels=self.get_panels(),
+            **self.template_helper.get_helper_context()
+        )
+        
+    def table_desc(self):
+        u'''
+        数据库表结构视图
+        '''
+        return render_template('admin/table_desc.html',
+            model_admins=self.get_model_admins(),
             **self.template_helper.get_helper_context()
         )
 
