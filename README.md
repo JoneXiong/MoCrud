@@ -1,9 +1,3 @@
-MoCrud
-======
-
-crud for Mole with peewee
-libs 包含了 MoCrud依赖的包：mole、jinja2、peewee、wtforms
-
 #### <i class="icon-file"></i> 概述
 MoCrud是一个用于快速构建关系型数据库数据管理应用的Python Web应用框架，本身是一个 [Mole](https://github.com/JoneXiong/Mole) 应用，数据库交互使用了开源的轻量级Python ORM [peewee](https://github.com/coleifer/peewee)，web表单的生成采用简单易扩展的[wtforms](https://github.com/wtforms/wtforms)，搭配jinja2模块引擎，除此之外不依赖于其他三方库。
 
