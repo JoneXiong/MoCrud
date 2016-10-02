@@ -136,7 +136,8 @@ class ModelConverter(object):
                         'choices': choices,
                         'coerce': coerce_fn,
                         'allow_blank': allow_blank})
-                    if not field.spliter:
+                    _spliter = getattr(field,'spliter',None)
+                    if not _spliter:
                         return FieldInfo(field.name, SelectChoicesField(**kwargs))
                     else:
                         return FieldInfo(field.name, SelectMultipleChoicesField(**kwargs))
